@@ -1,24 +1,42 @@
+/*
+ * Copyright 2024 Anton Sviridov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.indoorvivants.snapshots.sbtplugin
 
-import sbt.Keys.*
-import sbt.nio.Keys.*
-import sbt.*
 import scala.io.StdIn
+
 import com.indoorvivants.snapshots.build.SnapshotsBuild
+import sbt.Keys.*
+import sbt.*
+import sbt.nio.Keys.*
 
 object SnapshotsPlugin extends AutoPlugin {
   object autoImport {
     val snapshotsProjectIdentifier    = settingKey[String]("")
     val snapshotsPackageName          = settingKey[String]("")
     val snapshotsAddRuntimeDependency = settingKey[Boolean]("")
-    val tag            = ConcurrentRestrictions.Tag("snapshots-check")
-    val snapshotsCheck = taskKey[Unit]("")
+    val snapshotsCheck                = taskKey[Unit]("")
   }
+
+  val snapshotsTag = ConcurrentRestrictions.Tag("snapshots-check")
 
   import autoImport.*
 
   override def globalSettings: Seq[Setting[?]] = Seq(
-    concurrentRestrictions += Tags.limit(tag, 1)
+    concurrentRestrictions += Tags.limit(snapshotsTag, 1)
   )
 
   override def projectSettings: Seq[Setting[?]] =
@@ -44,7 +62,7 @@ object SnapshotsPlugin extends AutoPlugin {
             snapshotsProjectIdentifier.value
           )
         }
-        .tag(tag)
+        .tag(snapshotsTag)
         .value,
       Test / sourceGenerators += Def.task {
         SnapshotsBuild.generateSources(
@@ -59,11 +77,4 @@ object SnapshotsPlugin extends AutoPlugin {
         )
       }
     )
-
-  def SnapshotsGenerate(path: File, tempPath: File, packageName: String) =
-    s"""
-     |package $packageName
-     |object Snapshots extends proompts.snapshots.Snapshots(location = "$path", tmpLocation = "$tempPath")
-      """.trim.stripMargin
-
 }

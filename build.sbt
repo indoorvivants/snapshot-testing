@@ -50,8 +50,8 @@ lazy val snapshotsRuntime = projectMatrix
   )
   .settings(munitSettings)
   .jvmPlatform(Versions.scalaVersions)
-  .jsPlatform(Versions.scalaVersions, disableDependencyChecks)
-  .nativePlatform(Versions.scalaVersions, disableDependencyChecks)
+  .jsPlatform(Versions.scalaVersions)
+  .nativePlatform(Versions.scalaVersions)
   .settings(
     scalaJSUseMainModuleInitializer := true,
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
@@ -89,22 +89,6 @@ lazy val snapshotsSbtPlugin = projectMatrix
     )
   )
 
-/*
-lazy val docs = projectMatrix
-  .in(file("myproject-docs"))
-  .dependsOn(core)
-  .defaultAxes(defaults*)
-  .settings(
-    mdocVariables := Map(
-      "VERSION" -> version.value
-    )
-  )
-  .settings(disableDependencyChecks)
-  .jvmPlatform(Versions.scalaVersions)
-  .enablePlugins(MdocPlugin)
-  .settings(noPublish)
- */
-
 val noPublish = Seq(
   publish / skip      := true,
   publishLocal / skip := true
@@ -129,8 +113,6 @@ val CICommands = Seq(
   "scalafmtSbtCheck",
   s"scalafix --check $scalafixRules",
   "headerCheck",
-  "undeclaredCompileDependenciesTest",
-  "unusedCompileDependenciesTest",
   "missinglinkCheck"
 ).mkString(";")
 
@@ -138,8 +120,7 @@ val PrepareCICommands = Seq(
   s"scalafix --rules $scalafixRules",
   "scalafmtAll",
   "scalafmtSbt",
-  "headerCreate",
-  "undeclaredCompileDependenciesTest"
+  "headerCreate"
 ).mkString(";")
 
 addCommandAlias("ci", CICommands)
@@ -147,13 +128,6 @@ addCommandAlias("ci", CICommands)
 addCommandAlias("preCI", PrepareCICommands)
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
-
-// https://github.com/cb372/sbt-explicit-dependencies/issues/27
-lazy val disableDependencyChecks = Seq(
-  unusedCompileDependenciesTest     := {},
-  missinglinkCheck                  := {},
-  undeclaredCompileDependenciesTest := {}
-)
 
 lazy val munitSettings = Seq(
   libraryDependencies += {
