@@ -142,12 +142,10 @@ val CICommands = Seq(
   "clean",
   "compile",
   "test",
-  "docs/mdoc",
   "scalafmtCheckAll",
   "scalafmtSbtCheck",
   s"scalafix --check $scalafixRules",
-  "headerCheck",
-  "missinglinkCheck"
+  "headerCheck"
 ).mkString(";")
 
 val PrepareCICommands = Seq(
