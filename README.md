@@ -13,6 +13,11 @@ have an experience similar to that of [Insta](https://insta.rs/docs/cli/) with
 its Cargo integration. Currently only SBT is supported, but Mill support 
 can be added easily, as the project is already structured in a way that favours that.
 
+One of the goals was being able to work with Scala.js and Scala Native - so the Scala.js portion of the runtime includes small Node.js bindings
+to the `fs` module for filesystem operations.
+
+The runtime is published for 2.12, 2.13, 3 and JVM, JS, Native.
+
 
 ## Installation (SBT)
 To add the plugin to your SBT build:
@@ -47,5 +52,13 @@ At this point there is no OOTB test framework integrations, but they will come i
 
 [Sample MUnit integration](modules/example/src/test/scala/MunitSnapshotsIntegration.scala) | 
 [Sample MUnit tests](modules/example/src/test/scala/MunitExampleTests.scala)
+
+You can see what the workflow looks like by
+
+1. Modifying the sample test above
+2. Running `example/test` and observing a failure
+3. Running `example/snapshotsCheck` and accepting a diff
+4. Running `example/test` again and it should succeed
+5. The snapshot file will be changed on disk
 
 
