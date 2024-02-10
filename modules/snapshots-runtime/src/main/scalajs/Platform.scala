@@ -31,6 +31,9 @@ private[snapshots] trait Platform {
     def delete(): Unit =
       FS.rmSync(s, js.Dynamic.literal(force = true))
 
+    def createDirectories(): Unit =
+      FS.mkdirSync(s, js.Dynamic.literal(recursive = true))
+
     def readFileContents(): Option[String] = {
       val exists =
         FS.statSync(
@@ -51,8 +54,13 @@ private[snapshots] trait Platform {
 private[snapshots] trait FS extends js.Object {
   def readFileSync(path: String, options: js.Object = js.Object()): String =
     js.native
+
   def rmSync(path: String, options: js.Object = js.Object()): String =
     js.native
+
+  def mkdirSync(path: String, options: js.Object = js.Object()): String =
+    js.native
+
   def writeFileSync(
       path: String,
       contents: String,

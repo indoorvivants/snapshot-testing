@@ -92,7 +92,9 @@ object SnapshotsBuild {
           val choice = StdIn.readLine().trim
 
           if (choice == "a") {
-            IO.writeLines(new File(destination), newContentsLines)
+            val destinationFile = new File(destination)
+            Files.createDirectories(destinationFile.getParentFile().toPath)
+            IO.writeLines(destinationFile, newContentsLines)
             f.delete()
             diffFile.delete()
           }
@@ -109,6 +111,7 @@ object SnapshotsBuild {
       sourceDestination: File,
       tmpLocation: File
   ) = {
+    Files.createDirectories(sourceDestination.getParentFile().toPath)
 
     IO.writeLines(
       sourceDestination,
@@ -119,8 +122,8 @@ object SnapshotsBuild {
       ).linesIterator.toList
     )
 
-    Files.createDirectory(snapshotsDestination.toPath)
-    Files.createDirectory(tmpLocation.toPath)
+    // Files.createDirectories(snapshotsDestination.toPath)
+    // Files.createDirectories(tmpLocation.toPath)
 
     Seq(sourceDestination)
   }
@@ -132,7 +135,7 @@ object SnapshotsBuild {
   ) =
     s"""
      |package $packageName
-     |object Snapshots extends proompts.snapshots.Snapshots(location = "$path", tmpLocation = "$tempPath")
+     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = "$path", tmpLocation = "$tempPath")
       """.trim.stripMargin
 
 }

@@ -35,11 +35,12 @@ val Versions = new {
   val munit         = "1.0.0-M7"
 }
 
-lazy val root = project
+lazy val root: Project = project
   .in(file("."))
   .aggregate(snapshotsRuntime.projectRefs*)
   .aggregate(snapshotsBuildtime.projectRefs*)
   .aggregate(snapshotsSbtPlugin.projectRefs*)
+  .aggregate(example.projectRefs*)
   .settings(noPublish)
 
 lazy val snapshotsRuntime = projectMatrix
@@ -57,6 +58,24 @@ lazy val snapshotsRuntime = projectMatrix
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     nativeConfig ~= (_.withIncrementalCompilation(true))
   )
+
+lazy val example = projectMatrix
+  .dependsOn(snapshotsRuntime)
+  .in(file("modules/example"))
+  .defaultAxes(defaults*)
+  .settings(munitSettings)
+  .jvmPlatform(Versions.scalaVersions)
+  .jsPlatform(Versions.scalaVersions)
+  .nativePlatform(Versions.scalaVersions)
+  .settings(
+    scalaJSUseMainModuleInitializer := true,
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
+    nativeConfig ~= (_.withIncrementalCompilation(true)),
+    snapshotsPackageName          := "example",
+    snapshotsAddRuntimeDependency := false,
+    noPublish
+  )
+  .enablePlugins(SnapshotsPlugin)
 
 lazy val snapshotsBuildtime = projectMatrix
   .in(file("modules/snapshots-buildtime"))
@@ -77,8 +96,19 @@ lazy val snapshotsSbtPlugin = projectMatrix
   .in(file("modules/snapshots-sbt-plugin"))
   .settings(
     sbtPlugin := true,
-    name      := "sbt-snapshots"
+    name      := "sbt-snapshots",
+    scriptedLaunchOpts := {
+      scriptedLaunchOpts.value ++
+        Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
+    },
+    scriptedBufferLog := false,
+    publishLocal := publishLocal
+      .dependsOn(
+        LocalRootProject / publishLocal
+      )
+      .value
   )
+  .enablePlugins(ScriptedPlugin, SbtPlugin)
   .enablePlugins(BuildInfoPlugin)
   .settings(
     buildInfoPackage := "com.indoorvivants.snapshots.sbtplugin",

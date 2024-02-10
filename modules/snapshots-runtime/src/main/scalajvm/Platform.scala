@@ -19,6 +19,7 @@ package com.indoorvivants.snapshots
 import java.io.File
 import java.io.FileWriter
 import java.nio.file.Paths
+import java.nio.file.Files
 
 private[snapshots] trait Platform {
   // extension (s: String)
@@ -35,6 +36,9 @@ private[snapshots] trait Platform {
 
     def delete(): Unit =
       new File(s).delete()
+
+    def createDirectories(): Unit =
+      Files.createDirectories(Paths.get(s))
 
     def readFileContents(): Option[String] = {
       val file = new File(s)

@@ -28,6 +28,7 @@ object SnapshotsPlugin extends AutoPlugin {
     val snapshotsProjectIdentifier    = settingKey[String]("")
     val snapshotsPackageName          = settingKey[String]("")
     val snapshotsAddRuntimeDependency = settingKey[Boolean]("")
+    val snapshotsTemporaryDirectory   = settingKey[File]("")
     val snapshotsCheck                = taskKey[Unit]("")
   }
 
@@ -53,12 +54,13 @@ object SnapshotsPlugin extends AutoPlugin {
           )
         } else Seq.empty
       },
-      snapshotsProjectIdentifier    := moduleName.value,
+      snapshotsProjectIdentifier    := thisProject.value.id,
       snapshotsAddRuntimeDependency := true,
+      snapshotsTemporaryDirectory := (Test / managedResourceDirectories).value.head / "snapshots-tmp",
       snapshotsCheck := Def
         .task {
           SnapshotsBuild.checkSnapshots(
-            (Test / managedResourceDirectories).value.head / "snapshots-tmp",
+            snapshotsTemporaryDirectory.value,
             snapshotsProjectIdentifier.value
           )
         }
@@ -73,7 +75,7 @@ object SnapshotsPlugin extends AutoPlugin {
           sourceDestination =
             (Test / managedSourceDirectories).value.head / "Snapshots.scala",
           tmpLocation =
-            (Test / managedResourceDirectories).value.head / "snapshots-tmp"
+            snapshotsTemporaryDirectory.value
         )
       }
     )

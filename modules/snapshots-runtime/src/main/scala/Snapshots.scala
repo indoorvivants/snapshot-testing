@@ -31,6 +31,8 @@ case class Snapshots(location: String, tmpLocation: String) extends Platform {
     val snapContents =
       name + "\n" + file + "\n" + contents
 
+
+    tmpLocation.createDirectories()
     tmpFile.fileWriteContents(snapContents)
     tmpFileDiff.fileWriteContents(diff)
   }
