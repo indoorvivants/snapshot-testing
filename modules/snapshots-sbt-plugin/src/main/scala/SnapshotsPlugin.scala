@@ -27,13 +27,22 @@ import SnapshotsBuild.SnapshotAction
 
 object SnapshotsPlugin extends AutoPlugin {
   object autoImport {
-    val snapshotsProjectIdentifier    = settingKey[String]("")
-    val snapshotsPackageName          = settingKey[String]("")
-    val snapshotsAddRuntimeDependency = settingKey[Boolean]("")
-    val snapshotsTemporaryDirectory   = settingKey[File]("")
-    val snapshotsCheck                = taskKey[Unit]("")
-    val snapshotsAcceptAll            = taskKey[Unit]("")
-    val snapshotsDiscardAll           = taskKey[Unit]("")
+    val snapshotsProjectIdentifier = settingKey[String](
+      "Project identifier to separate snapshots coming from cross-platform projects"
+    )
+    val snapshotsPackageName = settingKey[String](
+      "Package name under which the generated Snapshots object will be created"
+    )
+    val snapshotsAddRuntimeDependency = settingKey[Boolean](
+      "Whether to add snapshot runtime to the build - true by default, you shouldn't need to touch this"
+    )
+    val snapshotsTemporaryDirectory =
+      settingKey[File]("Temp folder where snapshot diffs will be created")
+    val snapshotsCheck =
+      taskKey[Unit]("Interactively accept modified snapshotsAcceptAll")
+    val snapshotsAcceptAll = taskKey[Unit]("Accept all modified snapshots")
+    val snapshotsDiscardAll =
+      taskKey[Unit]("Discard all modifications to snapshots")
   }
 
   val snapshotsTag = ConcurrentRestrictions.Tag("snapshots-check")

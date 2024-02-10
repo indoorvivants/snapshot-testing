@@ -1,26 +1,51 @@
-```scala
-import munit.internal.difflib.Diffs
-import munit.Assertions
+<!--toc:start-->
+- [Installation (SBT)](#installation-sbt)
+- [Usage](#usage)
+<!--toc:end-->
+[![sbt-snapshots Scala version support](https://index.scala-lang.org/indoorvivants/snapshot-testing/sbt-snapshots/latest.svg)](https://index.scala-lang.org/indoorvivants/snapshot-testing/sbt-snapshots)
 
-inline def assertSnapshot(inline name: String, contents: String) =
-  Snapshots(name) match
-    case None =>
-      Snapshots.write(
-        name,
-        contents,
-        Diffs.create(contents, "").createDiffOnlyReport()
-      )
+## snapshots-testing
 
-      Assertions.fail(
-        s"No snapshot was found for $name, please run checkSnapshots command and accept a snapshot for this test"
-      )
+This is a micro library to aid with [snapshot testing](https://jestjs.io/docs/snapshot-testing).
 
-    case Some(value) =>
-      val diff = Diffs.create(contents, value)
-      if !diff.isEmpty then
-        val diffReport = diff.createDiffOnlyReport()
-        Snapshots.write(name, contents, diffReport)
-        Assertions.assertNoDiff(contents, value)
-      else
-        Snapshots.clear(name)
-```
+The meat of the project is actually in build tool integration - I wanted to
+have an experience similar to that of [Insta](https://insta.rs/docs/cli/) with 
+its Cargo integration. Currently only SBT is supported, but Mill support 
+can be added easily, as the project is already structured in a way that favours that.
+
+
+## Installation (SBT)
+To add the plugin to your SBT build:
+
+1. `addSbtPlugin("com.indoorvivants.snapshots" % "sbt-snapshots" % "VERSION")` to your `project/plugins.sbt` (see VERSION on the badge above)
+2. In the project where you would like to use snapshot testing, add these settings:
+
+    ```scala
+    .settings(
+      snapshotsPackageName          := "example",
+    )
+    .enablePlugins(SnapshotsPlugin)
+    ```
+
+    Package name is the only required setting, because the plugin will 
+    generate a source file that ties build-time filesystem locations with 
+    runtime test execution.
+
+The library provides no diffing capabilities, instead delegating that 
+task to the test framework of choice.
+
+## Usage
+
+To interact with snapshots, the following build tasks are provided:
+
+- `snapshotsCheck` - interactively accept modified snapshots (if there are any)
+- `snapshotsAcceptAll` - accept all modified snapshots
+- `snapshotsDiscardAll` - discard all snapshot changes
+
+
+At this point there is no OOTB test framework integrations, but they will come in the future - even though they will be very small and short and are easier copied into your project.  
+
+[Sample MUnit integration](modules/example/src/test/scala/MunitSnapshotsIntegration.scala) | 
+[Sample MUnit tests](modules/example/src/test/scala/MunitExampleTests.scala)
+
+
