@@ -61,4 +61,9 @@ You can see what the workflow looks like by
 4. Running `example/test` again and it should succeed
 5. The snapshot file will be changed on disk
 
+Here's the same workflow in video format:
+
+https://github.com/indoorvivants/snapshot-testing/assets/1052965/eaef5f88-641b-4bec-85be-1e7458379a58
+
+
 
