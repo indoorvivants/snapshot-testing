@@ -74,8 +74,7 @@ object SnapshotsPlugin extends AutoPlugin {
             (Test / resourceDirectory).value / "snapshots" / snapshotsProjectIdentifier.value,
           sourceDestination =
             (Test / managedSourceDirectories).value.head / "Snapshots.scala",
-          tmpLocation =
-            snapshotsTemporaryDirectory.value
+          tmpLocation = snapshotsTemporaryDirectory.value
         )
       }
     )

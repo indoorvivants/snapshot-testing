@@ -8,6 +8,7 @@ inThisBuild(
     semanticdbVersion          := scalafixSemanticdb.revision,
     scalafixScalaBinaryVersion := scalaBinaryVersion.value,
     organization               := "com.indoorvivants.snapshots",
+    sonatypeProfileName        := "com.indoorvivants",
     organizationName           := "Anton Sviridov",
     homepage := Some(
       url("https://github.com/indoorvivants/snapshot-testing")
@@ -26,6 +27,9 @@ inThisBuild(
     )
   )
 )
+
+organization        := "com.indoorvivants.snapshots"
+sonatypeProfileName := "com.indoorvivants"
 
 val Versions = new {
   val Scala213      = "2.13.12"

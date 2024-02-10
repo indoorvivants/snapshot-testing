@@ -38,4 +38,3 @@ Compile / sourceGenerators += Def.task {
 
   Seq(tmpDest)
 }
-

@@ -18,8 +18,8 @@ package com.indoorvivants.snapshots
 
 import java.io.File
 import java.io.FileWriter
-import java.nio.file.Paths
 import java.nio.file.Files
+import java.nio.file.Paths
 
 private[snapshots] trait Platform {
   // extension (s: String)
