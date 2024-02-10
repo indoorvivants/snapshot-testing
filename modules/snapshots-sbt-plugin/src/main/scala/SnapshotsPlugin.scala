@@ -23,6 +23,8 @@ import sbt.Keys.*
 import sbt.*
 import sbt.nio.Keys.*
 
+import SnapshotsBuild.SnapshotAction
+
 object SnapshotsPlugin extends AutoPlugin {
   object autoImport {
     val snapshotsProjectIdentifier    = settingKey[String]("")
@@ -30,6 +32,8 @@ object SnapshotsPlugin extends AutoPlugin {
     val snapshotsAddRuntimeDependency = settingKey[Boolean]("")
     val snapshotsTemporaryDirectory   = settingKey[File]("")
     val snapshotsCheck                = taskKey[Unit]("")
+    val snapshotsAcceptAll            = taskKey[Unit]("")
+    val snapshotsDiscardAll           = taskKey[Unit]("")
   }
 
   val snapshotsTag = ConcurrentRestrictions.Tag("snapshots-check")
@@ -61,7 +65,28 @@ object SnapshotsPlugin extends AutoPlugin {
         .task {
           SnapshotsBuild.checkSnapshots(
             snapshotsTemporaryDirectory.value,
-            snapshotsProjectIdentifier.value
+            snapshotsProjectIdentifier.value,
+            SnapshotAction.Interactive
+          )
+        }
+        .tag(snapshotsTag)
+        .value,
+      snapshotsAcceptAll := Def
+        .task {
+          SnapshotsBuild.checkSnapshots(
+            snapshotsTemporaryDirectory.value,
+            snapshotsProjectIdentifier.value,
+            SnapshotAction.Accept
+          )
+        }
+        .tag(snapshotsTag)
+        .value,
+      snapshotsDiscardAll := Def
+        .task {
+          SnapshotsBuild.checkSnapshots(
+            snapshotsTemporaryDirectory.value,
+            snapshotsProjectIdentifier.value,
+            SnapshotAction.Discard
           )
         }
         .tag(snapshotsTag)

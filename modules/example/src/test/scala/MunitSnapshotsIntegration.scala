@@ -6,7 +6,7 @@ import munit.FunSuite
 import example.Snapshots
 
 // This is a sample integration for Munit
-trait SnapshotsIntegration {
+trait MunitSnapshotsIntegration {
   self: FunSuite =>
   def assertSnapshot(name: String, contents: String) = {
     Snapshots.read(name) match {

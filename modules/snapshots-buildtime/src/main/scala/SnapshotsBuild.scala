@@ -45,63 +45,95 @@ object SnapshotsBuild {
         f.close()
     }
   }
-  def checkSnapshots(tmpLocation: File, projectId: String) = {
+
+  sealed trait SnapshotAction extends Product with Serializable
+  object SnapshotAction {
+    case object Accept      extends SnapshotAction
+    case object Discard     extends SnapshotAction
+    case object Interactive extends SnapshotAction
+  }
+
+  def checkSnapshots(
+      tmpLocation: File,
+      projectId: String,
+      action: SnapshotAction
+  ) = {
     val bold  = scala.Console.BOLD
     val reset = scala.Console.RESET
+
+    def makeBold(a: String) = bold + a + reset
+
     val legend =
-      s"${bold}a${reset} - accept, ${bold}s${reset} - skip\nYour choice: "
-    val modified = IO
-      .listFiles(
-        tmpLocation
-      )
+      s"${makeBold("a")} - accept, ${makeBold("s")} - skip\nYour choice: "
 
-    if (modified.isEmpty) {
-      System.err.println(
-        s"No snapshots to check in [${projectId}]"
-      )
-    } else {
+    if (tmpLocation.exists() && tmpLocation.isDirectory()) {
+      val modified = IO
+        .listFiles(tmpLocation)
 
-      modified
-        .filter(_.getName.endsWith("__snap.new"))
-        .foreach { f =>
-          val diffFile = new File(f.toString() + ".diff")
-          assert(diffFile.exists(), s"Diff file $diffFile not found")
+      if (modified.isEmpty) {
+        System.err.println(
+          s"No snapshots to check in [${projectId}]"
+        )
+      } else {
 
-          val diffContents = scala.io.Source
-            .fromFile(diffFile)
-            .getLines()
-            .mkString(System.lineSeparator())
+        modified
+          .filter(_.getName.endsWith("__snap.new"))
+          .foreach { f =>
+            val diffFile = new File(f.toString() + ".diff")
+            assert(diffFile.exists(), s"Diff file $diffFile not found")
 
-          val snapshotName :: destination :: newContentsLines =
-            scala.io.Source.fromFile(f).getLines().toList
+            val diffContents = scala.io.Source
+              .fromFile(diffFile)
+              .getLines()
+              .mkString(System.lineSeparator())
 
-          println(
-            s"Project ID: ${bold}${projectId}${reset}"
-          )
-          println(
-            s"Name: ${scala.Console.BOLD}$snapshotName${scala.Console.RESET}"
-          )
-          println(
-            s"Path: ${scala.Console.BOLD}$destination${scala.Console.RESET}"
-          )
-          println(diffContents)
+            val snapshotName :: destination :: newContentsLines =
+              scala.io.Source.fromFile(f).getLines().toList
 
-          println("\n\n")
-          print(legend)
+            def accept() = {
+              val destinationFile = new File(destination)
+              Files.createDirectories(
+                destinationFile.getParentFile().toPath
+              )
+              IO.writeLines(destinationFile, newContentsLines)
+              f.delete()
+              diffFile.delete()
+            }
 
-          val choice = StdIn.readLine().trim
+            def discard() = {
+              f.delete()
+              diffFile.delete()
+            }
 
-          if (choice == "a") {
-            val destinationFile = new File(destination)
-            Files.createDirectories(destinationFile.getParentFile().toPath)
-            IO.writeLines(destinationFile, newContentsLines)
-            f.delete()
-            diffFile.delete()
+            action match {
+              case SnapshotAction.Interactive =>
+                println(
+                  s"Project ID: ${makeBold(projectId)}"
+                )
+                println(
+                  s"Name: ${makeBold(snapshotName)}"
+                )
+                println(
+                  s"Path: ${makeBold(destination.toString)}"
+                )
+                println(diffContents)
+
+                println("\n\n")
+                print(legend)
+
+                val choice = StdIn.readLine().trim
+
+                if (choice == "a") accept()
+              case SnapshotAction.Accept =>
+                accept()
+              case SnapshotAction.Discard =>
+                discard()
+            }
+
           }
+      }
 
-        }
     }
-
   }
 
   def generateSources(

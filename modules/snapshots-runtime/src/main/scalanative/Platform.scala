@@ -22,7 +22,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 private[snapshots] trait Platform {
-  // extension (s: String)
   implicit class ToFileOps(s: String) {
     def resolve(segment: String): String =
       Paths.get(s).resolve(segment).toString()
