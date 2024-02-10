@@ -9,6 +9,6 @@ import example.Snapshots
 
 class ExampleTests extends FunSuite with SnapshotsIntegration {
   test("hello") {
-    assertSnapshot("my.snapshot", "hello?")
+    assertSnapshot("my.snapshot", "hello - more stuff")
   }
 }

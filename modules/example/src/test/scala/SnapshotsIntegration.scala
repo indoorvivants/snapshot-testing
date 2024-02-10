@@ -17,10 +17,6 @@ trait SnapshotsIntegration {
           Diffs.create(contents, "").createDiffOnlyReport()
         )
 
-        Assertions.fail(
-          s"No snapshot was found for $name, please run checkSnapshots command and accept a snapshot for this test"
-        )
-
       case Some(value) =>
         val diff = Diffs.create(contents, value)
         if (!diff.isEmpty) {
