@@ -166,7 +166,8 @@ object SnapshotsBuild {
 
   def generateIntegrationSources(
       sourceDestination: File,
-      integration: SnapshotIntegration
+      integration: SnapshotIntegration,
+      packageName: String
   ) = {
     Files.createDirectories(sourceDestination.getParentFile().toPath)
 
@@ -181,6 +182,7 @@ object SnapshotsBuild {
       )
       .getLines()
       .toList
+      .map(_.replace("$$PACKAGE$$", packageName))
 
     IO.writeLines(
       sourceDestination,

@@ -30,20 +30,27 @@ object SnapshotsPlugin extends AutoPlugin {
     val snapshotsProjectIdentifier = settingKey[String](
       "Project identifier to separate snapshots coming from cross-platform projects"
     )
+
     val snapshotsPackageName = settingKey[String](
       "Package name under which the generated Snapshots object will be created"
     )
+
     val snapshotsIntegrations = settingKey[Seq[SnapshotIntegration]](
       "Test framework integrations to generate in test sources"
     )
+
     val snapshotsAddRuntimeDependency = settingKey[Boolean](
       "Whether to add snapshot runtime to the build - true by default, you shouldn't need to touch this"
     )
+
     val snapshotsTemporaryDirectory =
       settingKey[File]("Temp folder where snapshot diffs will be created")
+
     val snapshotsCheck =
       taskKey[Unit]("Interactively accept modified snapshotsAcceptAll")
+
     val snapshotsAcceptAll = taskKey[Unit]("Accept all modified snapshots")
+
     val snapshotsDiscardAll =
       taskKey[Unit]("Discard all modifications to snapshots")
 
@@ -121,7 +128,8 @@ object SnapshotsPlugin extends AutoPlugin {
         val integrations = snapshotsIntegrations.value.flatMap { integ =>
           SnapshotsBuild.generateIntegrationSources(
             dest / s"${integ}Integration.scala",
-            integ
+            integ,
+            snapshotsPackageName.value
           )
         }
 

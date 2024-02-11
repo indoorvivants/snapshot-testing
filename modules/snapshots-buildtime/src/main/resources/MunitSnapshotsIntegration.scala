@@ -19,7 +19,7 @@ package com.indoorvivants.snapshots.munit_integration
 import munit._
 import com.indoorvivants.snapshots._
 import munit.internal.difflib.Diffs
-import example.Snapshots
+import _root_.$$PACKAGE$$.Snapshots
 
 // This is a sample integration for Munit
 trait MunitSnapshotsIntegration {

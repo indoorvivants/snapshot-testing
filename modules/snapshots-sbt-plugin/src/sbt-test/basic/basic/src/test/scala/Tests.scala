@@ -1,3 +1,5 @@
+package example.bla
+
 import com.indoorvivants.snapshots.munit_integration._
 import munit._
 
