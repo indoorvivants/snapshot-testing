@@ -26,6 +26,10 @@ Compile / unmanagedSourceDirectories +=
   (ThisBuild / baseDirectory).value.getParentFile /
     "modules" / "snapshots-buildtime" / "src" / "main" / "scala"
 
+Compile / unmanagedResourceDirectories +=
+  (ThisBuild / baseDirectory).value.getParentFile /
+    "modules" / "snapshots-buildtime" / "src" / "main" / "resources"
+
 Compile / sourceGenerators += Def.task {
   val tmpDest =
     (Compile / managedResourceDirectories).value.head / "BuildInfo.scala"
