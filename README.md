@@ -1,7 +1,11 @@
 <!--toc:start-->
+- [snapshots-testing](#snapshots-testing)
 - [Installation (SBT)](#installation-sbt)
 - [Usage](#usage)
+  - [Scala.js](#scalajs)
 <!--toc:end-->
+
+
 [![sbt-snapshots Scala version support](https://index.scala-lang.org/indoorvivants/snapshot-testing/sbt-snapshots/latest.svg)](https://index.scala-lang.org/indoorvivants/snapshot-testing/sbt-snapshots)
 
 ## snapshots-testing
@@ -28,6 +32,7 @@ To add the plugin to your SBT build:
     ```scala
     .settings(
       snapshotsPackageName          := "example",
+      snapshotsIntegrations         += SnapshotIntegration.MUnit // if using MUnit
     )
     .enablePlugins(SnapshotsPlugin)
     ```
@@ -41,16 +46,22 @@ task to the test framework of choice.
 
 ## Usage
 
-To interact with snapshots, the following build tasks are provided:
+SBT tasks:
 
 - `snapshotsCheck` - interactively accept modified snapshots (if there are any)
 - `snapshotsAcceptAll` - accept all modified snapshots
 - `snapshotsDiscardAll` - discard all snapshot changes
 
+SBT settings: 
+- `snapshotsIntegrations` - list of test framework integrations to generate in test sources
+  
+  Instead of providing a separate dependency for each test framework, the plugin generates 
+  a single-file integration. This helps avoid the dependency hell of incompatible framework 
+  versions. It might seem weird at first, because it is, but I believe it's the only way to 
+  stay sane.
 
-At this point there is no OOTB test framework integrations, but they will come in the future - even though they will be very small and short and are easier copied into your project.  
+- `snapshotsPackageName` - package name to use for generated file
 
-[Sample MUnit integration](modules/example/src/test/scala/MunitSnapshotsIntegration.scala) | 
 [Sample MUnit tests](modules/example/src/test/scala/MunitExampleTests.scala)
 
 You can see what the workflow looks like by
@@ -66,4 +77,13 @@ Here's the same workflow in video format:
 https://github.com/indoorvivants/snapshot-testing/assets/1052965/eaef5f88-641b-4bec-85be-1e7458379a58
 
 
+### Scala.js
 
+The snapshots runtime will only run under Node.js (or any runtime where `require("node:fs")` import can succeed).
+
+To make sure module import is enabled, you should ensure you're using the correct module kind - 
+for example commonJS:
+
+```scala
+scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
+```
