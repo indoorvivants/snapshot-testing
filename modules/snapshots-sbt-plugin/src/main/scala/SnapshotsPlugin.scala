@@ -23,7 +23,7 @@ import sbt.Keys.*
 import sbt.*
 import sbt.nio.Keys.*
 
-import SnapshotsBuild.SnapshotAction
+import SnapshotsBuild.{SnapshotAction, SnapshotIntegration}
 
 object SnapshotsPlugin extends AutoPlugin {
   object autoImport {
@@ -32,6 +32,9 @@ object SnapshotsPlugin extends AutoPlugin {
     )
     val snapshotsPackageName = settingKey[String](
       "Package name under which the generated Snapshots object will be created"
+    )
+    val snapshotsIntegrations = settingKey[Seq[SnapshotIntegration]](
+      "Test framework integrations to generate in test sources"
     )
     val snapshotsAddRuntimeDependency = settingKey[Boolean](
       "Whether to add snapshot runtime to the build - true by default, you shouldn't need to touch this"
@@ -43,6 +46,8 @@ object SnapshotsPlugin extends AutoPlugin {
     val snapshotsAcceptAll = taskKey[Unit]("Accept all modified snapshots")
     val snapshotsDiscardAll =
       taskKey[Unit]("Discard all modifications to snapshots")
+
+    val SnapshotIntegration = SnapshotsBuild.SnapshotIntegration
   }
 
   val snapshotsTag = ConcurrentRestrictions.Tag("snapshots-check")
@@ -63,12 +68,13 @@ object SnapshotsPlugin extends AutoPlugin {
           }
 
           Seq(
-            "tech.neander" % s"snapshots-runtime_$cross" % BuildInfo.version
+            "com.indoorvivants.snapshots" % s"snapshots-runtime_$cross" % BuildInfo.version
           )
         } else Seq.empty
       },
       snapshotsProjectIdentifier    := thisProject.value.id,
       snapshotsAddRuntimeDependency := true,
+      snapshotsIntegrations         := Seq.empty,
       snapshotsTemporaryDirectory := (Test / managedResourceDirectories).value.head / "snapshots-tmp",
       snapshotsCheck := Def
         .task {
@@ -101,15 +107,25 @@ object SnapshotsPlugin extends AutoPlugin {
         .tag(snapshotsTag)
         .value,
       Test / sourceGenerators += Def.task {
-        SnapshotsBuild.generateSources(
+        val dest = (Test / managedSourceDirectories).value.head
+
+        val sources = SnapshotsBuild.generateSources(
           projectId = snapshotsProjectIdentifier.value,
           packageName = snapshotsPackageName.value,
           snapshotsDestination =
             (Test / resourceDirectory).value / "snapshots" / snapshotsProjectIdentifier.value,
-          sourceDestination =
-            (Test / managedSourceDirectories).value.head / "Snapshots.scala",
+          sourceDestination = dest / "Snapshots.scala",
           tmpLocation = snapshotsTemporaryDirectory.value
         )
+
+        val integrations = snapshotsIntegrations.value.flatMap { integ =>
+          SnapshotsBuild.generateIntegrationSources(
+            dest / s"${integ}Integration.scala",
+            integ
+          )
+        }
+
+        sources ++ integrations
       }
     )
 }

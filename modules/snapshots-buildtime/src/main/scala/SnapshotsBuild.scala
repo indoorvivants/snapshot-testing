@@ -22,6 +22,8 @@ import java.nio.file.Files
 
 import scala.io.StdIn
 
+import com.indoorvivants.snapshots.build.SnapshotsBuild.SnapshotIntegration.MUnit
+
 object SnapshotsBuild {
 
   private object IO {
@@ -51,6 +53,11 @@ object SnapshotsBuild {
     case object Accept      extends SnapshotAction
     case object Discard     extends SnapshotAction
     case object Interactive extends SnapshotAction
+  }
+
+  sealed trait SnapshotIntegration extends Product with Serializable
+  object SnapshotIntegration {
+    case object MUnit extends SnapshotIntegration
   }
 
   def checkSnapshots(
@@ -154,8 +161,31 @@ object SnapshotsBuild {
       ).linesIterator.toList
     )
 
-    // Files.createDirectories(snapshotsDestination.toPath)
-    // Files.createDirectories(tmpLocation.toPath)
+    Seq(sourceDestination)
+  }
+
+  def generateIntegrationSources(
+      sourceDestination: File,
+      integration: SnapshotIntegration
+  ) = {
+    Files.createDirectories(sourceDestination.getParentFile().toPath)
+
+    val fileName = integration match {
+      case MUnit => "MunitSnapshotsIntegration.scala"
+
+    }
+
+    val contents = scala.io.Source
+      .fromInputStream(
+        getClass().getResourceAsStream("/" + fileName)
+      )
+      .getLines()
+      .toList
+
+    IO.writeLines(
+      sourceDestination,
+      contents
+    )
 
     Seq(sourceDestination)
   }

@@ -1,0 +1,10 @@
+> root/test
+-> root3/test
+-> rootNative3/test
+-> rootJS3/test
+> snapshotsAcceptAll
+$ exists src/test/resources/snapshots/root/my.snapshot
+> root3/test
+> rootNative3/test
+> rootJS3/test
+

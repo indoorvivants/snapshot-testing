@@ -77,6 +77,7 @@ lazy val example = projectMatrix
     nativeConfig ~= (_.withIncrementalCompilation(true)),
     snapshotsPackageName          := "example",
     snapshotsAddRuntimeDependency := false,
+    snapshotsIntegrations += SnapshotIntegration.MUnit,
     noPublish
   )
   .enablePlugins(SnapshotsPlugin)
@@ -108,7 +109,11 @@ lazy val snapshotsSbtPlugin = projectMatrix
     scriptedBufferLog := false,
     publishLocal := publishLocal
       .dependsOn(
-        LocalRootProject / publishLocal
+        snapshotsBuildtime.jvm(Versions.Scala212) / publishLocal,
+        snapshotsRuntime.js(Versions.Scala3) / publishLocal,
+        snapshotsRuntime.native(Versions.Scala3) / publishLocal,
+        snapshotsRuntime.jvm(Versions.Scala3) / publishLocal,
+        snapshotsRuntime.jvm(Versions.Scala213) / publishLocal
       )
       .value
   )
@@ -142,6 +147,7 @@ val CICommands = Seq(
   "clean",
   "compile",
   "test",
+  "scriped",
   "scalafmtCheckAll",
   "scalafmtSbtCheck",
   s"scalafix --check $scalafixRules",
