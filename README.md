@@ -61,6 +61,13 @@ SBT settings:
   stay sane.
 
 - `snapshotsPackageName` - package name to use for generated file
+- `snapshotsForceOverwrite` - if set to `true`, snapshot assertions won't fail the tests,
+   but instead they will directly overwrite snapshot contents with the new value.
+
+   It is particularly useful in a setting where you want to only check snapshots on CI,
+   but always update them locally without having to explicitly accept.
+
+   Recommended configuration is therefore `snapshotsForceOverwrite := !sys.env.contains("CI")` - or whatever way you can detect that your code is running in CI
 
 [Sample MUnit tests](modules/example/src/test/scala/MunitExampleTests.scala)
 

@@ -28,18 +28,17 @@ trait MunitSnapshotsIntegration {
   def assertSnapshot(name: String, contents: String) = {
     Snapshots.read(name) match {
       case None =>
-        Snapshots.recordChanges(
-          name,
-          contents,
-          Diffs.create(contents, "").createDiffOnlyReport()
-        )
+        // If snapshot is not found, we directly write its contents
+        Snapshots.write(name, contents)
 
       case Some(value) =>
         val diff = Diffs.create(contents, value)
         if (!diff.isEmpty) {
-          val diffReport = diff.createDiffOnlyReport()
-          Snapshots.recordChanges(name, contents, diffReport)
-          Assertions.assertNoDiff(contents, value)
+          if (!Snapshots.forceOverwrite) {
+            val diffReport = diff.createDiffOnlyReport()
+            Snapshots.recordChanges(name, contents, diffReport)
+            Assertions.assertNoDiff(contents, value)
+          } else Snapshots.write(name, contents)
         } else
           Snapshots.clearChanges(name)
     }

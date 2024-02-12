@@ -16,7 +16,11 @@
 
 package com.indoorvivants.snapshots
 
-case class Snapshots(location: String, tmpLocation: String) extends Platform {
+case class Snapshots(
+    location: String,
+    tmpLocation: String,
+    forceOverwrite: Boolean
+) extends Platform {
 
   private def getTmpFile(name: String) =
     tmpLocation.resolve(name)
@@ -34,6 +38,12 @@ case class Snapshots(location: String, tmpLocation: String) extends Platform {
     tmpLocation.createDirectories()
     tmpFile.fileWriteContents(snapContents)
     tmpFileDiff.fileWriteContents(diff)
+  }
+
+  def write(name: String, contents: String): Unit = {
+    val file = location.resolve(name)
+    location.createDirectories()
+    file.fileWriteContents(contents)
   }
 
   def clearChanges(name: String): Unit = {

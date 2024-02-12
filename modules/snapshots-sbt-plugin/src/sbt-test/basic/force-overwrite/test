@@ -1,0 +1,9 @@
+$ exists src/test/resources/snapshots/root3/my.snapshot
+$ exists src/test/resources/snapshots/rootNative3/my.snapshot
+$ exists src/test/resources/snapshots/rootJS3/my.snapshot
+> root3/test
+> rootNative3/test
+> rootJS3/test
+> root3/check
+> rootNative3/check
+> rootJS3/check

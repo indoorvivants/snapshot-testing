@@ -8,6 +8,7 @@ lazy val root = projectMatrix
     snapshotsIntegrations += SnapshotIntegration.MUnit,
     libraryDependencies +=
       "org.scalameta" %%% "munit" % "1.0.0-M7" % Test,
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
   )
   .enablePlugins(SnapshotsPlugin)
+

@@ -43,6 +43,12 @@ object SnapshotsPlugin extends AutoPlugin {
       "Whether to add snapshot runtime to the build - true by default, you shouldn't need to touch this"
     )
 
+    val snapshotsForceOverwrite = settingKey[Boolean](
+      "(default: false) If set to true, tests where there is a snapshot mismatch won't fail, instead overwriting snapshot directly with new contents - meaning you don't have to run snapshotCheck/snapshotsAcceptAll.\n" +
+        "A recommended workflow with this option is to only enable it if NOT running on CI - e.g. `snapshotsForceOverwrite := !sys.env.contains(\"CI\")`.\n" +
+        "This way snapshot compliance will be checked on CI, but local workflow will be much quicker with immediate snapshot overwriting"
+    )
+
     val snapshotsTemporaryDirectory =
       settingKey[File]("Temp folder where snapshot diffs will be created")
 
@@ -82,7 +88,10 @@ object SnapshotsPlugin extends AutoPlugin {
       snapshotsProjectIdentifier    := thisProject.value.id,
       snapshotsAddRuntimeDependency := true,
       snapshotsIntegrations         := Seq.empty,
-      snapshotsTemporaryDirectory := (Test / managedResourceDirectories).value.head / "snapshots-tmp",
+      snapshotsForceOverwrite       := false,
+      snapshotsTemporaryDirectory := (
+        Test / managedResourceDirectories
+      ).value.head / "snapshots-tmp",
       snapshotsCheck := Def
         .task {
           SnapshotsBuild.checkSnapshots(
@@ -122,7 +131,8 @@ object SnapshotsPlugin extends AutoPlugin {
           snapshotsDestination =
             (Test / resourceDirectory).value / "snapshots" / snapshotsProjectIdentifier.value,
           sourceDestination = dest / "Snapshots.scala",
-          tmpLocation = snapshotsTemporaryDirectory.value
+          tmpLocation = snapshotsTemporaryDirectory.value,
+          forceOverwrite = snapshotsForceOverwrite.value
         )
 
         val integrations = snapshotsIntegrations.value.flatMap { integ =>

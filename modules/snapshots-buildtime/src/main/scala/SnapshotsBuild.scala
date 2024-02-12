@@ -148,7 +148,8 @@ object SnapshotsBuild {
       packageName: String,
       snapshotsDestination: File,
       sourceDestination: File,
-      tmpLocation: File
+      tmpLocation: File,
+      forceOverwrite: Boolean = true
   ) = {
     Files.createDirectories(sourceDestination.getParentFile().toPath)
 
@@ -157,7 +158,8 @@ object SnapshotsBuild {
       SnapshotsGenerate(
         snapshotsDestination,
         tmpLocation,
-        packageName
+        packageName,
+        forceOverwrite
       ).linesIterator.toList
     )
 
@@ -195,11 +197,12 @@ object SnapshotsBuild {
   private def SnapshotsGenerate(
       path: File,
       tempPath: File,
-      packageName: String
+      packageName: String,
+      forceOverwrite: Boolean
   ) =
     s"""
      |package $packageName
-     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = "$path", tmpLocation = "$tempPath")
+     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = "$path", tmpLocation = "$tempPath", forceOverwrite = $forceOverwrite)
       """.trim.stripMargin
 
 }
