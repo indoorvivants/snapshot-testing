@@ -25,15 +25,20 @@ case class Snapshots(
   private def getTmpFile(name: String) =
     tmpLocation.resolve(name)
 
+  def sanitiseSnapshotName(name: String): String = {
+    name.replaceAll("[^a-zA-Z0-9_\\-]", "_")
+  }
+
   def recordChanges(name: String, contents: String, diff: String): Unit = {
-    val tmpName     = name + "__snap.new"
-    val tmpDiff     = name + "__snap.new.diff"
-    val file        = location.resolve(name)
+    val saneName    = sanitiseSnapshotName(name)
+    val tmpName     = saneName + "__snap.new"
+    val tmpDiff     = saneName + "__snap.new.diff"
+    val file        = location.resolve(saneName)
     val tmpFile     = tmpLocation.resolve(tmpName)
     val tmpFileDiff = tmpLocation.resolve(tmpDiff)
 
     val snapContents =
-      name + "\n" + file + "\n" + contents
+      saneName + "\n" + file + "\n" + contents
 
     tmpLocation.createDirectories()
     tmpFile.fileWriteContents(snapContents)
@@ -41,14 +46,16 @@ case class Snapshots(
   }
 
   def write(name: String, contents: String): Unit = {
-    val file = location.resolve(name)
+    val saneName = sanitiseSnapshotName(name)
+    val file     = location.resolve(saneName)
     location.createDirectories()
     file.fileWriteContents(contents)
   }
 
   def clearChanges(name: String): Unit = {
-    val tmpName     = name + "__snap.new"
-    val tmpDiff     = name + "__snap.new.diff"
+    val saneName    = sanitiseSnapshotName(name)
+    val tmpName     = saneName + "__snap.new"
+    val tmpDiff     = saneName + "__snap.new.diff"
     val tmpFile     = getTmpFile(tmpName)
     val tmpFileDiff = getTmpFile(tmpDiff)
 
@@ -56,7 +63,9 @@ case class Snapshots(
     tmpFile.delete()
   }
 
-  def read(name: String): Option[String] =
-    location.resolve(name).readFileContents()
+  def read(name: String): Option[String] = {
+    val saneName = sanitiseSnapshotName(name)
+    location.resolve(saneName).readFileContents()
+  }
 
 }
