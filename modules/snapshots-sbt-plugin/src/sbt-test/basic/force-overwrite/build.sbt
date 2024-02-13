@@ -14,7 +14,7 @@ lazy val root = projectMatrix
       val dir =
         (Test / resourceDirectory).value / "snapshots" / snapshotsProjectIdentifier.value
 
-      val contents = IO.read(dir / "my.snapshot")
+      val contents = IO.read(dir / "my_snapshot")
       val expected = "hello - more stuff"
 
       assert(
