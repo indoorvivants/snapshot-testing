@@ -78,6 +78,7 @@ lazy val example = projectMatrix
     snapshotsPackageName          := "example",
     snapshotsAddRuntimeDependency := false,
     snapshotsIntegrations += SnapshotIntegration.MUnit,
+    libraryDependencies += "io.circe" %%% "circe-core" % "0.14.6",
     noPublish
   )
   .enablePlugins(SnapshotsPlugin)
