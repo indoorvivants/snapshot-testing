@@ -1,0 +1,13 @@
+-$ exists src/snapshots/root3/my_snapshot
+-$ exists src/snapshots/rootNative3/my_snapshot
+-$ exists src/snapshots/rootJS3/my_snapshot
+> snapshotsMigrate 0.0.6
+$ exists src/snapshots/root3/my_snapshot
+$ exists src/snapshots/rootNative3/my_snapshot
+$ exists src/snapshots/rootJS3/my_snapshot
+-$ exists src/test/resources/snapshots/root3/my_snapshot
+-$ exists src/test/resources/snapshots/rootNative3/my_snapshot
+-$ exists src/test/resources/snapshots/rootJS3/my_snapshot
+> root3/test
+> rootJS3/test
+> rootNative3/test

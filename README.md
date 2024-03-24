@@ -3,6 +3,8 @@
 - [Installation (SBT)](#installation-sbt)
 - [Usage](#usage)
   - [Scala.js](#scalajs)
+  - [Breaking changes log](#breaking-changes-log)
+    - [0.0.6](#006)
 <!--toc:end-->
 
 
@@ -94,3 +96,16 @@ for example commonJS:
 ```scala
 scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
 ```
+
+
+### Breaking changes log
+
+#### 0.0.6
+
+Snapshots moved from `src/test/resources/snapshots` to `src/snapshots`.
+This was done because writing to `test/resources` re-triggers file watching 
+when you run `~test`.
+
+You can return old behaviour by manually configuring new setting `snapshotsLocation`.
+
+You can automatically move all the snapshots by running `snapshotsMigrate 0.0.6`
