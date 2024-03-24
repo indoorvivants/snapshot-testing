@@ -64,6 +64,10 @@ object SnapshotsPlugin extends AutoPlugin {
     val snapshotsDiscardAll =
       taskKey[Unit]("Discard all modifications to snapshots")
 
+    val snapshotsMigrate = inputKey[Unit](
+      "Apply a known migration to snapshot files. This task aids in upgrading the plugin version if there are breaking changes"
+    )
+
     val SnapshotIntegration = SnapshotsBuild.SnapshotIntegration
   }
 
@@ -149,6 +153,61 @@ object SnapshotsPlugin extends AutoPlugin {
         }
 
         sources ++ integrations
-      }
+      },
+      snapshotsMigrate := Def
+        .inputTask {
+          import complete.DefaultParsers._
+
+          val migrations        = Seq("0.0.6").map(_.trim.toLowerCase())
+          val args: Seq[String] = spaceDelimited("<arg>").parsed
+          val migration = args.headOption
+            .map(_.trim.toLowerCase())
+            .filter(migrations.contains(_))
+            .getOrElse(
+              sys.error(
+                s"Expected 1 argument to the task, which is migration name, one of: [${migrations.mkString(", ")}]"
+              )
+            )
+
+          val log = sLog.value
+
+          migration match {
+            case "0.0.6" =>
+              val oldLocation =
+                (Test / resourceDirectory).value / "snapshots" / snapshotsProjectIdentifier.value
+              val newLocation =
+                snapshotsLocation.value / snapshotsProjectIdentifier.value
+
+              if (oldLocation.exists() && oldLocation.isDirectory()) {
+                val snapshots = IO.listFiles(oldLocation)
+                log.info(
+                  s"Found ${snapshots.size} snapshots in old location [$oldLocation]. Will migrate them to new location - [$newLocation]"
+                )
+
+                IO.createDirectory(newLocation)
+
+                snapshots.foreach { file =>
+                  IO.move(file, newLocation / file.name)
+                }
+
+                log.info(s"Migrated ${snapshots.size} files")
+
+                val remaining = IO.listFiles(oldLocation).size
+
+                if (remaining == 0) {
+                  log.info(s"[$oldLocation] is now empty and can be removed")
+                }
+
+              } else {
+                sLog.value.warn(
+                  s"Tried to find old snapshots in [$oldLocation] but it doesn't seem to exist or is not a directory. Doing nothing"
+                )
+              }
+
+          }
+
+        }
+        .tag(snapshotsTag)
+        .evaluated
     )
 }

@@ -148,6 +148,7 @@ val CICommands = Seq(
   "clean",
   "compile",
   "test",
+  "example/test",
   "scripted",
   "scalafmtCheckAll",
   "scalafmtSbtCheck",
