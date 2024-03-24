@@ -11,10 +11,8 @@ lazy val root = projectMatrix
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     snapshotsForceOverwrite := true,
     check := {
-      val dir =
-        (Test / resourceDirectory).value / "snapshots" / snapshotsProjectIdentifier.value
 
-      val contents = IO.read(dir / "my_snapshot")
+      val contents = IO.read(snapshotsLocation.value / snapshotsProjectIdentifier.value / "my_snapshot")
       val expected = "hello - more stuff"
 
       assert(
