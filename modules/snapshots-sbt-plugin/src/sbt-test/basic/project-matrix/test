@@ -3,7 +3,7 @@
 -> rootNative3/test
 -> rootJS3/test
 > snapshotsAcceptAll
-$ exists src/test/resources/snapshots/root/my_snapshot
+$ exists src/snapshots/root/my_snapshot
 > root3/test
 > rootNative3/test
 > rootJS3/test

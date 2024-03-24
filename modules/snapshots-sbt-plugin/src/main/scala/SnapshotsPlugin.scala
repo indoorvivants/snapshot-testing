@@ -49,6 +49,10 @@ object SnapshotsPlugin extends AutoPlugin {
         "This way snapshot compliance will be checked on CI, but local workflow will be much quicker with immediate snapshot overwriting"
     )
 
+    val snapshotsLocation = settingKey[File](
+      "Location of the snapshot files (this location is checked in to your VCS)"
+    )
+
     val snapshotsTemporaryDirectory =
       settingKey[File]("Temp folder where snapshot diffs will be created")
 
@@ -89,6 +93,7 @@ object SnapshotsPlugin extends AutoPlugin {
       snapshotsAddRuntimeDependency := true,
       snapshotsIntegrations         := Seq.empty,
       snapshotsForceOverwrite       := false,
+      snapshotsLocation             := sourceDirectory.value / "snapshots",
       snapshotsTemporaryDirectory := (
         Test / managedResourceDirectories
       ).value.head / "snapshots-tmp",
@@ -129,7 +134,7 @@ object SnapshotsPlugin extends AutoPlugin {
           projectId = snapshotsProjectIdentifier.value,
           packageName = snapshotsPackageName.value,
           snapshotsDestination =
-            (Test / resourceDirectory).value / "snapshots" / snapshotsProjectIdentifier.value,
+            snapshotsLocation.value / snapshotsProjectIdentifier.value,
           sourceDestination = dest / "Snapshots.scala",
           tmpLocation = snapshotsTemporaryDirectory.value,
           forceOverwrite = snapshotsForceOverwrite.value
