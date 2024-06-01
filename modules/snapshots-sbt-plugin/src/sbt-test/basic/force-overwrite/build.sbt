@@ -1,6 +1,6 @@
 lazy val root = projectMatrix
   .in(file("."))
-  .jvmPlatform(Seq("3.3.1", "2.13.12"))
+  .jvmPlatform(Seq("3.3.1", "2.13.14"))
   .nativePlatform(Seq("3.3.1"))
   .jsPlatform(Seq("3.3.1"))
   .settings(
