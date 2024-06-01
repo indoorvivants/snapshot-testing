@@ -36,10 +36,13 @@ private[snapshots] trait Platform {
 
     def readFileContents(): Option[String] = {
       val exists =
-        FS.statSync(
-          s,
-          js.Dynamic.literal(throwIfNoEntry = false)
-        ) != js.undefined
+        !js.isUndefined(
+          FS.statSync(
+            s,
+            js.Dynamic.literal(throwIfNoEntry = false)
+          )
+        )
+
       if (!exists) None
       else
         Some {
