@@ -4,6 +4,7 @@
 - [Usage](#usage)
   - [Scala.js](#scalajs)
   - [Breaking changes log](#breaking-changes-log)
+    - [0.0.7](#007)
     - [0.0.6](#006)
 <!--toc:end-->
 
@@ -106,6 +107,11 @@ The generated MUnit integration will target MUnit 1.0.0 and above, prompted
 by the changes in the packages for framework's difflib: https://github.com/scalameta/munit/pull/756/files#diff-a09dc8368568b397ac3069018fd17ad22e4f90c5e5cfdc12a4340f9d7c10ac09
 
 All users are advised to migrate to MUnit 1.0.0+.
+As a consequence, following version bumps occurred:
+
+- Scala Native 0.4 -> 0.5 
+- Scala.js 1.16
+- Scala 2.13.12 -> 2.13.14
 
 #### 0.0.6
 
