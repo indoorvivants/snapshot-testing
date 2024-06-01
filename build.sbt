@@ -36,7 +36,7 @@ val Versions = new {
   val Scala212      = "2.12.16"
   val Scala3        = "3.3.1"
   val scalaVersions = Seq(Scala3, Scala212, Scala213)
-  val munit         = "1.0.0-M7"
+  val munit         = "1.0.0"
 }
 
 lazy val root: Project = project
