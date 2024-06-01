@@ -19,9 +19,9 @@ package com.indoorvivants.snapshots.sbtplugin
 import scala.io.StdIn
 
 import com.indoorvivants.snapshots.build.SnapshotsBuild
-import sbt.Keys.*
-import sbt.*
-import sbt.nio.Keys.*
+import sbt.Keys._
+import sbt._
+import sbt.nio.Keys._
 
 import SnapshotsBuild.{SnapshotAction, SnapshotIntegration}
 

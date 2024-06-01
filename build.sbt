@@ -4,12 +4,11 @@ Global / excludeLintKeys += scalaJSLinkerConfig
 
 inThisBuild(
   List(
-    semanticdbEnabled          := true,
-    semanticdbVersion          := scalafixSemanticdb.revision,
-    scalafixScalaBinaryVersion := scalaBinaryVersion.value,
-    organization               := "com.indoorvivants.snapshots",
-    sonatypeProfileName        := "com.indoorvivants",
-    organizationName           := "Anton Sviridov",
+    semanticdbEnabled   := true,
+    semanticdbVersion   := scalafixSemanticdb.revision,
+    organization        := "com.indoorvivants.snapshots",
+    sonatypeProfileName := "com.indoorvivants",
+    organizationName    := "Anton Sviridov",
     homepage := Some(
       url("https://github.com/indoorvivants/snapshot-testing")
     ),
@@ -32,11 +31,11 @@ organization        := "com.indoorvivants.snapshots"
 sonatypeProfileName := "com.indoorvivants"
 
 val Versions = new {
-  val Scala213      = "2.13.12"
+  val Scala213      = "2.13.14"
   val Scala212      = "2.12.16"
   val Scala3        = "3.3.1"
   val scalaVersions = Seq(Scala3, Scala212, Scala213)
-  val munit         = "1.0.0-M7"
+  val munit         = "1.0.0"
 }
 
 lazy val root: Project = project
@@ -78,7 +77,7 @@ lazy val example = projectMatrix
     snapshotsPackageName          := "example",
     snapshotsAddRuntimeDependency := false,
     snapshotsIntegrations += SnapshotIntegration.MUnit,
-    libraryDependencies += "io.circe" %%% "circe-core" % "0.14.6",
+    libraryDependencies += "com.lihaoyi" %%% "upickle" % "3.3.1",
     noPublish
   )
   .enablePlugins(SnapshotsPlugin)
