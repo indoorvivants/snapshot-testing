@@ -17,7 +17,6 @@
 package com.indoorvivants.snapshots.munit_integration
 
 import munit._
-import com.indoorvivants.snapshots._
 import munit.diff.Diffs
 import _root_.$$PACKAGE$$.Snapshots
 
