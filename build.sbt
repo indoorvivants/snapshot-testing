@@ -33,8 +33,10 @@ sonatypeProfileName := "com.indoorvivants"
 val Versions = new {
   val Scala213      = "2.13.14"
   val Scala212      = "2.12.16"
-  val Scala3        = "3.3.1"
+  val Scala3        = "3.3.3"
+  val Scala3Next    = "3.5.0"
   val scalaVersions = Seq(Scala3, Scala212, Scala213)
+  val scala3Next    = Seq(Scala3Next)
   val munit         = "1.0.0"
 }
 
@@ -44,6 +46,7 @@ lazy val root: Project = project
   .aggregate(snapshotsBuildtime.projectRefs*)
   .aggregate(snapshotsSbtPlugin.projectRefs*)
   .aggregate(example.projectRefs*)
+  .aggregate(exampleScalaNext)
   .settings(noPublish)
 
 lazy val snapshotsRuntime = projectMatrix
@@ -62,6 +65,22 @@ lazy val snapshotsRuntime = projectMatrix
     nativeConfig ~= (_.withIncrementalCompilation(true))
   )
 
+lazy val exampleSettings: Seq[Def.Setting[_]] =
+  Seq(
+    scalaJSUseMainModuleInitializer := true,
+    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
+    nativeConfig ~= (_.withIncrementalCompilation(true)),
+    snapshotsPackageName          := "example",
+    snapshotsAddRuntimeDependency := false,
+    snapshotsIntegrations += SnapshotIntegration.MUnit,
+    libraryDependencies += "com.lihaoyi" %%% "upickle" % "3.3.1",
+    scalacOptions += "-Xfatal-warnings",
+    scalacOptions += {
+      if (scalaVersion.value.startsWith("2.")) "-Ywarn-unused"
+      else "-Wunused:all"
+    }
+  ) ++ noPublish
+
 lazy val example = projectMatrix
   .dependsOn(snapshotsRuntime)
   .in(file("modules/example"))
@@ -70,14 +89,21 @@ lazy val example = projectMatrix
   .jvmPlatform(Versions.scalaVersions)
   .jsPlatform(Versions.scalaVersions)
   .nativePlatform(Versions.scalaVersions)
+  .settings(exampleSettings)
+  .enablePlugins(SnapshotsPlugin)
+
+lazy val exampleScalaNext = project
+  .dependsOn(snapshotsRuntime.jvm(Versions.Scala3))
+  .in(file("modules/example"))
+  .settings(munitSettings)
+  .settings(target := target.value / "next")
   .settings(
-    scalaJSUseMainModuleInitializer := true,
-    scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    nativeConfig ~= (_.withIncrementalCompilation(true)),
     snapshotsPackageName          := "example",
     snapshotsAddRuntimeDependency := false,
     snapshotsIntegrations += SnapshotIntegration.MUnit,
     libraryDependencies += "com.lihaoyi" %%% "upickle" % "3.3.1",
+    scalacOptions ++= Seq("-Wunused:all", "-Xfatal-warnings"),
+    scalaVersion := Versions.Scala3Next,
     noPublish
   )
   .enablePlugins(SnapshotsPlugin)
