@@ -194,6 +194,9 @@ object SnapshotsBuild {
     Seq(sourceDestination)
   }
 
+  private def escapeFileName(path: File): String =
+    s""""${path.toString().replace("\\", "\\\\")}""""
+
   private def SnapshotsGenerate(
       path: File,
       tempPath: File,
@@ -202,7 +205,7 @@ object SnapshotsBuild {
   ) =
     s"""
      |package $packageName
-     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = "$path", tmpLocation = "$tempPath", forceOverwrite = $forceOverwrite)
+     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = ${escapeFileName(path)}, tmpLocation = ${escapeFileName(tempPath)}, forceOverwrite = $forceOverwrite)
       """.trim.stripMargin
 
 }
