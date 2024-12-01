@@ -202,10 +202,13 @@ object SnapshotsBuild {
       tempPath: File,
       packageName: String,
       forceOverwrite: Boolean
-  ) =
+  ) = {
+    val escapedPath     = escapeFileName(path)
+    val escapedTempPath = escapeFileName(tempPath)
     s"""
      |package $packageName
-     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = ${escapeFileName(path)}, tmpLocation = ${escapeFileName(tempPath)}, forceOverwrite = $forceOverwrite)
+     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = $escapedPath, tmpLocation = $escapedTempPath, forceOverwrite = $forceOverwrite)
       """.trim.stripMargin
+  }
 
 }
