@@ -10,7 +10,9 @@ jobs:
   build:
     strategy:
       fail-fast: false
-    runs-on: ubuntu-latest
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -23,10 +25,7 @@ jobs:
           cache: 'sbt'
 
       - name: Test
-        run: sbt --client ci
-
-      - name: Test publishing
-        run: sbt --client publishLocal
+        run: sbt ci publishLocal
 
       - name: Publish ${{ github.ref }}
         run: sbt ci-release
