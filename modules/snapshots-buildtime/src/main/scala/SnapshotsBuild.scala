@@ -194,15 +194,21 @@ object SnapshotsBuild {
     Seq(sourceDestination)
   }
 
+  private def escapeFileName(path: File): String =
+    s""""${path.toString().replace("\\", "\\\\")}""""
+
   private def SnapshotsGenerate(
       path: File,
       tempPath: File,
       packageName: String,
       forceOverwrite: Boolean
-  ) =
+  ) = {
+    val escapedPath     = escapeFileName(path)
+    val escapedTempPath = escapeFileName(tempPath)
     s"""
      |package $packageName
-     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = "$path", tmpLocation = "$tempPath", forceOverwrite = $forceOverwrite)
+     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = $escapedPath, tmpLocation = $escapedTempPath, forceOverwrite = $forceOverwrite)
       """.trim.stripMargin
+  }
 
 }
