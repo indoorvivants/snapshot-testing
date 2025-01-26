@@ -3,7 +3,8 @@
 - [Installation (SBT)](#installation-sbt)
 - [Usage](#usage)
   - [Scala.js](#scalajs)
-  - [Breaking changes log](#breaking-changes-log)
+  - [Notable changes log](#notable-changes-log)
+    - [0.0.10](#0010)
     - [0.0.7](#007)
     - [0.0.6](#006)
 <!--toc:end-->
@@ -99,7 +100,11 @@ scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
 ```
 
 
-### Breaking changes log
+### Notable changes log
+
+#### 0.0.10
+
+- Scala.js minimum version is now **1.18.0**
 
 #### 0.0.7
 
@@ -109,7 +114,7 @@ by the changes in the packages for framework's difflib: https://github.com/scala
 All users are advised to migrate to MUnit 1.0.0+.
 As a consequence, following version bumps occurred:
 
-- Scala Native 0.4 -> 0.5 
+- **Scala Native 0.4 -> 0.5**
 - Scala.js 1.16
 - Scala 2.13.12 -> 2.13.14
 
