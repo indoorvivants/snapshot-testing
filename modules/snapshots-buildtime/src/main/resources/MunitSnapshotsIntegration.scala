@@ -16,13 +16,11 @@
 
 package com.indoorvivants.snapshots.munit_integration
 
-import munit._
-import munit.diff.Diff
 import _root_.$$PACKAGE$$.Snapshots
 
 // This is a sample integration for Munit
 trait MunitSnapshotsIntegration {
-  self: FunSuite =>
+  self: munit.FunSuite =>
 
   def assertSnapshot(name: String, contents: String) = {
     Snapshots.read(name) match {
@@ -31,12 +29,12 @@ trait MunitSnapshotsIntegration {
         Snapshots.write(name, contents)
 
       case Some(value) =>
-        val diff = new Diff(contents, value)
+        val diff = new munit.diff.Diff(contents, value) //new Diff(contents, value)
         if (!diff.isEmpty) {
           if (!Snapshots.forceOverwrite) {
             val diffReport = diff.createDiffOnlyReport()
             Snapshots.recordChanges(name, contents, diffReport)
-            Assertions.assertNoDiff(contents, value)
+            munit.Assertions.assertNoDiff(contents, value)
           } else Snapshots.write(name, contents)
         } else
           Snapshots.clearChanges(name)
