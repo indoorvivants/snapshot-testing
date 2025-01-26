@@ -22,6 +22,34 @@ import _root_.$$PACKAGE$$.Snapshots
 trait MunitSnapshotsIntegration {
   self: munit.FunSuite =>
 
+  /** Assert that the snapshot by the given name has given contents.
+    *
+    * If the snapshot file is missing, it will be eagerly written to the correct
+    * location, the assertion will succeed.
+    *
+    * If the snapshot file exists, and its contents differ from the ones passed
+    * into this function, then what happens next depends on the
+    * `snapshotsForceOverwrite` setting in the SBT plugin:
+    *
+    *   - if `snapshotsForceOverwrite := true`, then the new contents will be
+    *     directly written to the snapshot file. The assertion will succeed.
+    *
+    *   - if `snapshotsForceOverwrite := false`, then the diff will be recorded,
+    *     and the snapshot will be marked as dirty, and you will need to resolve
+    *     this change using one of the
+    *     `snapshotsCheck/snapshotsAcceptAll/snapshotsDiscardAll` commands in
+    *     the build tool. The assertion will fail.
+    *
+    * If the snapshot file exists, and its contents are the same as the ones
+    * passed into this function, then assertion will succeed and the snapshot
+    * will be marked as "clean" (if it was previously marked as dirty).
+    *
+    * @param name
+    *   name of the snapshot, from which the snapshot filename will be derived
+    *   by removing any characters other than English letters, numbers,
+    *   underscore `_`, or hyphen `-`
+    * @param contents
+    */
   def assertSnapshot(name: String, contents: String) = {
     Snapshots.read(name) match {
       case None =>
@@ -29,7 +57,7 @@ trait MunitSnapshotsIntegration {
         Snapshots.write(name, contents)
 
       case Some(value) =>
-        val diff = new munit.diff.Diff(contents, value) //new Diff(contents, value)
+        val diff = new munit.diff.Diff(contents, value)
         if (!diff.isEmpty) {
           if (!Snapshots.forceOverwrite) {
             val diffReport = diff.createDiffOnlyReport()
