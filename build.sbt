@@ -31,13 +31,14 @@ organization        := "com.indoorvivants.snapshots"
 sonatypeProfileName := "com.indoorvivants"
 
 val Versions = new {
-  val Scala213      = "2.13.14"
-  val Scala212      = "2.12.16"
-  val Scala3        = "3.3.3"
-  val Scala3Next    = "3.5.0"
+  val Scala213      = "2.13.16"
+  val Scala212      = "2.12.20"
+  val Scala3        = "3.3.4"
+  val Scala3Next    = "3.6.3"
   val scalaVersions = Seq(Scala3, Scala212, Scala213)
   val scala3Next    = Seq(Scala3Next)
-  val munit         = "1.0.0"
+  val munit         = "1.1.0"
+  val upickle       = "3.3.1"
 }
 
 lazy val root: Project = project
@@ -73,8 +74,8 @@ lazy val exampleSettings: Seq[Def.Setting[_]] =
     snapshotsPackageName          := "example",
     snapshotsAddRuntimeDependency := false,
     snapshotsIntegrations += SnapshotIntegration.MUnit,
-    libraryDependencies += "com.lihaoyi" %%% "upickle" % "3.3.1",
-    scalacOptions += "-Xfatal-warnings",
+    libraryDependencies += "com.lihaoyi" %%% "upickle" % Versions.upickle,
+    scalacOptions ++= Seq("-Xfatal-warnings", "-deprecation"),
     scalacOptions += {
       if (scalaVersion.value.startsWith("2.")) "-Ywarn-unused"
       else "-Wunused:all"
@@ -171,6 +172,7 @@ val scalafixRules = Seq(
 
 val CICommands = Seq(
   "clean",
+  "scalafixEnable",
   "compile",
   "test",
   "example/test",
@@ -182,6 +184,7 @@ val CICommands = Seq(
 ).mkString(";")
 
 val PrepareCICommands = Seq(
+  "scalafixEnable",
   s"scalafix --rules $scalafixRules",
   "scalafmtAll",
   "scalafmtSbt",
