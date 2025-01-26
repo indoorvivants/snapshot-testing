@@ -17,7 +17,7 @@
 package com.indoorvivants.snapshots.munit_integration
 
 import munit._
-import munit.diff.Diffs
+import munit.diff.Diff
 import _root_.$$PACKAGE$$.Snapshots
 
 // This is a sample integration for Munit
@@ -31,7 +31,7 @@ trait MunitSnapshotsIntegration {
         Snapshots.write(name, contents)
 
       case Some(value) =>
-        val diff = Diffs.create(contents, value)
+        val diff = new Diff(contents, value)
         if (!diff.isEmpty) {
           if (!Snapshots.forceOverwrite) {
             val diffReport = diff.createDiffOnlyReport()
