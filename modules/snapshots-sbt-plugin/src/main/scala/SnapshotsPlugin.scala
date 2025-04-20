@@ -89,7 +89,7 @@ object SnapshotsPlugin extends AutoPlugin {
           }
 
           Seq(
-            "com.indoorvivants.snapshots" % s"snapshots-runtime_$cross" % BuildInfo.version
+            "com.indoorvivants.snapshots" % s"snapshots-runtime_$cross" % BuildInfo.version % Test
           )
         } else Seq.empty
       },
