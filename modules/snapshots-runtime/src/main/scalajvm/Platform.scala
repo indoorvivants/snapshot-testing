@@ -41,13 +41,13 @@ private[snapshots] trait Platform {
     def createDirectories(): Unit =
       Files.createDirectories(Paths.get(s))
 
-    def readFileContents(): Option[String] = {
+    def readFileContents(encoding: String): Option[String] = {
       val file = new File(s)
       if (!file.exists()) None
       else
         Some {
           scala.io.Source
-            .fromFile(file, "utf-8")
+            .fromFile(file, encoding)
             .getLines()
             .mkString("\n")
         }

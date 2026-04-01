@@ -43,7 +43,8 @@ private[snapshots] trait Platform {
     def createDirectories(): Unit =
       FS.mkdirSync(s, js.Dynamic.literal(recursive = true))
 
-    def readFileContents(): Option[String] = {
+    def readFileContents(encoding: String): Option[String] = {
+      val finalEncoding = encodingMapping.getOrElse(encoding, encoding)
       val exists =
         !js.isUndefined(
           FS.statSync(

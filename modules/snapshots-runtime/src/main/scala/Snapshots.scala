@@ -66,7 +66,7 @@ case class Snapshots(
 
   def read(name: String): Option[String] = {
     val saneName = sanitiseSnapshotName(name)
-    location.resolve(saneName).readFileContents()
+    location.resolve(saneName).readFileContents(encoding)
   }
 
 }
