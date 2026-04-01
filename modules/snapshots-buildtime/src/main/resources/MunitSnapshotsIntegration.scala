@@ -50,22 +50,24 @@ trait MunitSnapshotsIntegration {
     *   underscore `_`, or hyphen `-`
     * @param contents
     */
-  def assertSnapshot(name: String, contents: String) = {
-    Snapshots.read(name) match {
+  def assertSnapshot(name: String, contents: String, encoding: String = "UTF-8") = {
+    val SnapshotsInstance = Snapshots.copy(encoding = encoding)
+
+    SnapshotsInstance.read(name) match {
       case None =>
         // If snapshot is not found, we directly write its contents
-        Snapshots.write(name, contents)
+        SnapshotsInstance.write(name, contents)
 
       case Some(value) =>
         val diff = new munit.diff.Diff(contents, value)
         if (!diff.isEmpty) {
-          if (!Snapshots.forceOverwrite) {
+          if (!SnapshotsInstance.forceOverwrite) {
             val diffReport = diff.createDiffOnlyReport()
-            Snapshots.recordChanges(name, contents, diffReport)
+            SnapshotsInstance.recordChanges(name, contents, diffReport)
             munit.Assertions.assertNoDiff(contents, value)
-          } else Snapshots.write(name, contents)
+          } else SnapshotsInstance.write(name, contents)
         } else
-          Snapshots.clearChanges(name)
+          SnapshotsInstance.clearChanges(name)
     }
   }
 }

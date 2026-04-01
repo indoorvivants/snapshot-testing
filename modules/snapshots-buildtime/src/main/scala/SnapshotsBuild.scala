@@ -149,7 +149,8 @@ object SnapshotsBuild {
       snapshotsDestination: File,
       sourceDestination: File,
       tmpLocation: File,
-      forceOverwrite: Boolean = true
+      forceOverwrite: Boolean = true,
+      encoding: String = "UTF-8"
   ) = {
     Files.createDirectories(sourceDestination.getParentFile().toPath)
 
@@ -159,7 +160,8 @@ object SnapshotsBuild {
         snapshotsDestination,
         tmpLocation,
         packageName,
-        forceOverwrite
+        forceOverwrite,
+        encoding
       ).linesIterator.toList
     )
 
@@ -201,13 +203,14 @@ object SnapshotsBuild {
       path: File,
       tempPath: File,
       packageName: String,
-      forceOverwrite: Boolean
+      forceOverwrite: Boolean,
+      encoding: String
   ) = {
     val escapedPath     = escapeFileName(path)
     val escapedTempPath = escapeFileName(tempPath)
     s"""
      |package $packageName
-     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = $escapedPath, tmpLocation = $escapedTempPath, forceOverwrite = $forceOverwrite)
+     |object Snapshots extends com.indoorvivants.snapshots.Snapshots(location = $escapedPath, tmpLocation = $escapedTempPath, forceOverwrite = $forceOverwrite, encoding = "$encoding")
       """.trim.stripMargin
   }
 
