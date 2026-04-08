@@ -18,6 +18,7 @@ package com.indoorvivants.snapshots
 
 import java.io.File
 import java.io.FileWriter
+import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -27,8 +28,8 @@ private[snapshots] trait Platform {
     def resolve(segment: String): String =
       Paths.get(s).resolve(segment).toString()
 
-    def fileWriteContents(contents: String): Unit = {
-      val f = new FileWriter(new File(s))
+    def fileWriteContents(contents: String, encoding: String): Unit = {
+      val f = Files.newBufferedWriter(Paths.get(s), Charset.forName(encoding))
       try {
         f.write(contents)
       } finally { f.close() }
@@ -40,13 +41,13 @@ private[snapshots] trait Platform {
     def createDirectories(): Unit =
       Files.createDirectories(Paths.get(s))
 
-    def readFileContents(): Option[String] = {
+    def readFileContents(encoding: String): Option[String] = {
       val file = new File(s)
       if (!file.exists()) None
       else
         Some {
           scala.io.Source
-            .fromFile(file, "utf-8")
+            .fromFile(file, encoding)
             .getLines()
             .mkString("\n")
         }

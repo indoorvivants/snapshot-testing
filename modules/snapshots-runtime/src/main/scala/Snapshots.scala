@@ -19,7 +19,8 @@ package com.indoorvivants.snapshots
 case class Snapshots(
     location: String,
     tmpLocation: String,
-    forceOverwrite: Boolean
+    forceOverwrite: Boolean,
+    encoding: String
 ) extends Platform {
 
   private def getTmpFile(name: String) =
@@ -41,15 +42,15 @@ case class Snapshots(
       saneName + "\n" + file + "\n" + contents
 
     tmpLocation.createDirectories()
-    tmpFile.fileWriteContents(snapContents)
-    tmpFileDiff.fileWriteContents(diff)
+    tmpFile.fileWriteContents(snapContents, encoding)
+    tmpFileDiff.fileWriteContents(diff, encoding)
   }
 
   def write(name: String, contents: String): Unit = {
     val saneName = sanitiseSnapshotName(name)
     val file     = location.resolve(saneName)
     location.createDirectories()
-    file.fileWriteContents(contents)
+    file.fileWriteContents(contents, encoding)
   }
 
   def clearChanges(name: String): Unit = {
@@ -65,7 +66,7 @@ case class Snapshots(
 
   def read(name: String): Option[String] = {
     val saneName = sanitiseSnapshotName(name)
-    location.resolve(saneName).readFileContents()
+    location.resolve(saneName).readFileContents(encoding)
   }
 
 }

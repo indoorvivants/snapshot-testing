@@ -21,12 +21,21 @@ import scala.scalajs.js.annotation.JSImport
 import scalajs.js
 
 private[snapshots] trait Platform {
+  final private val encodingMapping = Map(
+    "UTF-8" -> "utf8"
+  )
   implicit class ToFileOps(s: String) {
     def resolve(segment: String): String =
       s + "/" + segment
 
-    def fileWriteContents(contents: String): Unit =
-      FS.writeFileSync(s, contents)
+    def fileWriteContents(contents: String, encoding: String): Unit = {
+      val finalEncoding = encodingMapping.getOrElse(encoding, encoding)
+      FS.writeFileSync(
+        s,
+        contents,
+        js.Dynamic.literal(encoding = finalEncoding)
+      )
+    }
 
     def delete(): Unit =
       FS.rmSync(s, js.Dynamic.literal(force = true))
@@ -34,7 +43,8 @@ private[snapshots] trait Platform {
     def createDirectories(): Unit =
       FS.mkdirSync(s, js.Dynamic.literal(recursive = true))
 
-    def readFileContents(): Option[String] = {
+    def readFileContents(encoding: String): Option[String] = {
+      val finalEncoding = encodingMapping.getOrElse(encoding, encoding)
       val exists =
         !js.isUndefined(
           FS.statSync(
@@ -67,7 +77,7 @@ private[snapshots] trait FS extends js.Object {
   def writeFileSync(
       path: String,
       contents: String,
-      options: String = ""
+      options: js.Object = js.Object()
   ): Unit = js.native
   def statSync(path: String, options: js.Any): js.Any = js.native
 }
