@@ -1,6 +1,13 @@
-lazy val root = projectMatrix
-  .in(file("."))
-  .jvmPlatform(Seq("3.3.7", "2.13.16"))
+import sbt.internal.ProjectMatrix
+
+lazy val overwrite = configure(projectMatrix.in(file("force-overwrite")), true)
+lazy val noOverwrite = configure(projectMatrix.in(file("no-overwrite")), false)
+
+val check = taskKey[Unit]("")
+
+def configure(pm: ProjectMatrix, force: Boolean) = 
+  pm
+  .jvmPlatform(Seq("3.3.7", "2.13.17"))
   .nativePlatform(Seq("3.3.7"))
   .jsPlatform(Seq("3.3.7"))
   .settings(
@@ -9,7 +16,7 @@ lazy val root = projectMatrix
     libraryDependencies +=
       "org.scalameta" %%% "munit" % "1.1.0" % Test,
     scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
-    snapshotsForceOverwrite := true,
+    snapshotsForceOverwrite := force,
     check := {
 
       val contents = IO.read(snapshotsLocation.value / snapshotsProjectIdentifier.value / "my_snapshot")
@@ -24,4 +31,4 @@ lazy val root = projectMatrix
   )
   .enablePlugins(SnapshotsPlugin)
 
-val check = taskKey[Unit]("")
+

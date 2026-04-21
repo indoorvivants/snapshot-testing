@@ -1,10 +1,10 @@
-addSbtPlugin("com.github.sbt" % "sbt-ci-release"    % "1.5.12")
-addSbtPlugin("com.eed3si9n"   % "sbt-projectmatrix" % "0.9.1")
+addSbtPlugin("com.github.sbt" % "sbt-ci-release"    % "1.11.2")
+addSbtPlugin("com.eed3si9n"   % "sbt-projectmatrix" % "0.11.0")
 
 // Code quality
 //addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat"    % "0.4.2")
-addSbtPlugin("org.scalameta"     % "sbt-scalafmt"  % "2.5.2")
-addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix"  % "0.14.0")
+addSbtPlugin("org.scalameta"     % "sbt-scalafmt"  % "2.5.6")
+addSbtPlugin("ch.epfl.scala"     % "sbt-scalafix"  % "0.14.6")
 addSbtPlugin("com.eed3si9n"      % "sbt-buildinfo" % "0.11.0")
 addSbtPlugin("de.heikoseeberger" % "sbt-header"    % "5.10.0")
 
@@ -12,8 +12,8 @@ addSbtPlugin("de.heikoseeberger" % "sbt-header"    % "5.10.0")
 addSbtPlugin("org.scalameta" % "sbt-mdoc" % "2.5.1")
 
 // Scala.js and Scala Native
-addSbtPlugin("org.scala-js"     % "sbt-scalajs"      % "1.18.2")
-addSbtPlugin("org.scala-native" % "sbt-scala-native" % "0.5.6")
+addSbtPlugin("org.scala-js"     % "sbt-scalajs"      % "1.21.0")
+addSbtPlugin("org.scala-native" % "sbt-scala-native" % "0.5.11")
 
 libraryDependencies ++= List(
   "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value

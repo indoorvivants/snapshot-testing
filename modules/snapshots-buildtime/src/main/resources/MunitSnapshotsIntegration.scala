@@ -24,8 +24,15 @@ trait MunitSnapshotsIntegration {
 
   /** Assert that the snapshot by the given name has given contents.
     *
-    * If the snapshot file is missing, it will be eagerly written to the correct
-    * location, the assertion will succeed.
+    * If the snapshot file doesn't exist, then the behaviour depends on the
+    * `snapshotsForceOverwrite` setting:
+    *
+    *   - if `snapshotsForceOverwrite := true` it will be eagerly written to the
+    * correct location, the assertion will succeed
+    *
+    *   - if `snapshotsForceOverwrite := false`, then the assertion will fail
+    *     and
+    * a diff will be recorder
     *
     * If the snapshot file exists, and its contents differ from the ones passed
     * into this function, then what happens next depends on the
@@ -54,7 +61,14 @@ trait MunitSnapshotsIntegration {
     Snapshots.read(name) match {
       case None =>
         // If snapshot is not found, we directly write its contents
-        Snapshots.write(name, contents)
+        if (Snapshots.forceOverwrite) {
+          Snapshots.write(name, contents)
+        } else {
+          val diff       = new munit.diff.Diff(contents, "")
+          val diffReport = diff.createDiffOnlyReport()
+          Snapshots.recordChanges(name, contents, diffReport)
+          munit.Assertions.assertNoDiff(contents, "")
+        }
 
       case Some(value) =>
         val diff = new munit.diff.Diff(contents, value)
