@@ -31,8 +31,7 @@ trait MunitSnapshotsIntegration {
     * correct location, the assertion will succeed
     *
     *   - if `snapshotsForceOverwrite := false`, then the assertion will fail
-    *     and
-    * a diff will be recorder
+    *     and a diff will be recorded
     *
     * If the snapshot file exists, and its contents differ from the ones passed
     * into this function, then what happens next depends on the
