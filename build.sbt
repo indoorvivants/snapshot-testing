@@ -4,11 +4,10 @@ Global / excludeLintKeys += scalaJSLinkerConfig
 
 inThisBuild(
   List(
-    semanticdbEnabled   := true,
-    semanticdbVersion   := scalafixSemanticdb.revision,
-    organization        := "com.indoorvivants.snapshots",
-    sonatypeProfileName := "com.indoorvivants",
-    organizationName    := "Anton Sviridov",
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision,
+    organization      := "com.indoorvivants.snapshots",
+    organizationName  := "Anton Sviridov",
     homepage := Some(
       url("https://github.com/indoorvivants/snapshot-testing")
     ),
@@ -27,18 +26,17 @@ inThisBuild(
   )
 )
 
-organization        := "com.indoorvivants.snapshots"
-sonatypeProfileName := "com.indoorvivants"
+organization := "com.indoorvivants.snapshots"
 
 val Versions = new {
-  val Scala213      = "2.13.16"
-  val Scala212      = "2.12.20"
-  val Scala3        = "3.3.4"
-  val Scala3Next    = "3.6.3"
+  val Scala213      = "2.13.17"
+  val Scala212      = "2.12.21"
+  val Scala3        = "3.3.7"
+  val Scala3Next    = "3.8.3"
   val scalaVersions = Seq(Scala3, Scala212, Scala213)
   val scala3Next    = Seq(Scala3Next)
-  val munit         = "1.1.0"
-  val upickle       = "3.3.1"
+  val munit         = "1.3.0"
+  val upickle       = "4.4.3"
 }
 
 lazy val root: Project = project
@@ -75,10 +73,11 @@ lazy val exampleSettings: Seq[Def.Setting[_]] =
     snapshotsAddRuntimeDependency := false,
     snapshotsIntegrations += SnapshotIntegration.MUnit,
     libraryDependencies += "com.lihaoyi" %%% "upickle" % Versions.upickle,
-    scalacOptions ++= Seq("-Xfatal-warnings", "-deprecation"),
-    scalacOptions += {
-      if (scalaVersion.value.startsWith("2.")) "-Ywarn-unused"
-      else "-Wunused:all"
+    scalacOptions ++= Seq("-deprecation"),
+    scalacOptions ++= {
+      if (scalaVersion.value.startsWith("2."))
+        Seq("-Ywarn-unused", "-Xfatal-warnings")
+      else Seq("-Wunused:all", "-Werror")
     }
   ) ++ noPublish
 
@@ -102,8 +101,8 @@ lazy val exampleScalaNext = project
     snapshotsPackageName          := "example",
     snapshotsAddRuntimeDependency := false,
     snapshotsIntegrations += SnapshotIntegration.MUnit,
-    libraryDependencies += "com.lihaoyi" %%% "upickle" % "3.3.1",
-    scalacOptions ++= Seq("-Wunused:all", "-Xfatal-warnings"),
+    libraryDependencies += "com.lihaoyi" %%% "upickle" % Versions.upickle,
+    scalacOptions ++= Seq("-Wunused:all"),
     scalaVersion := Versions.Scala3Next,
     noPublish
   )

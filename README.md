@@ -4,6 +4,7 @@
 - [Usage](#usage)
   - [Scala.js](#scalajs)
   - [Notable changes log](#notable-changes-log)
+    - [0.0.12](#0012)
     - [0.0.10](#0010)
     - [0.0.7](#007)
     - [0.0.6](#006)
@@ -101,6 +102,18 @@ scalaJSLinkerConfig ~= (_.withModuleKind(ModuleKind.CommonJSModule))
 
 
 ### Notable changes log
+
+#### 0.0.12
+
+- Handling of missing snapshot files was corrected 
+  
+  Previous behaviour was incorrect - regardless of snapshotsForceOverwrite setting,
+  when snapshot was missing, we just quietly wrote it to the worktree.
+
+  This means that forgetting to check in a snapshot file would still lead to tests 
+  passing on CI.
+
+- Scala.js minimum version is now 1.21.0
 
 #### 0.0.10
 
