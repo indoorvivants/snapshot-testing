@@ -4,6 +4,7 @@
 - [Usage](#usage)
   - [Scala.js](#scalajs)
   - [Notable changes log](#notable-changes-log)
+    - [0.0.12](#0012)
     - [0.0.10](#0010)
     - [0.0.7](#007)
     - [0.0.6](#006)
