@@ -73,10 +73,11 @@ lazy val exampleSettings: Seq[Def.Setting[_]] =
     snapshotsAddRuntimeDependency := false,
     snapshotsIntegrations += SnapshotIntegration.MUnit,
     libraryDependencies += "com.lihaoyi" %%% "upickle" % Versions.upickle,
-    scalacOptions ++= Seq("-Xfatal-warnings", "-deprecation"),
-    scalacOptions += {
-      if (scalaVersion.value.startsWith("2.")) "-Ywarn-unused"
-      else "-Wunused:all"
+    scalacOptions ++= Seq("-deprecation"),
+    scalacOptions ++= {
+      if (scalaVersion.value.startsWith("2."))
+        Seq("-Ywarn-unused", "-Xfatal-warnings")
+      else Seq("-Wunused:all", "-Werror")
     }
   ) ++ noPublish
 
@@ -101,7 +102,7 @@ lazy val exampleScalaNext = project
     snapshotsAddRuntimeDependency := false,
     snapshotsIntegrations += SnapshotIntegration.MUnit,
     libraryDependencies += "com.lihaoyi" %%% "upickle" % Versions.upickle,
-    scalacOptions ++= Seq("-Wunused:all", "-Xfatal-warnings"),
+    scalacOptions ++= Seq("-Wunused:all"),
     scalaVersion := Versions.Scala3Next,
     noPublish
   )
