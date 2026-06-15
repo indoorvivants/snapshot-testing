@@ -37,9 +37,9 @@ val Versions = new {
   val scala3Next    = Seq(Scala3Next)
   val munit         = "1.3.0"
   val upickle       = "4.4.3"
-  
-  val Sbt1 = "1.12.12"
-  val Sbt2 = "2.0.0"
+
+  val Sbt1      = "1.12.12"
+  val Sbt2      = "2.0.0"
   val Sbt1Scala = Scala212
   val Sbt2Scala = "3.8.4"
 }
@@ -154,7 +154,8 @@ lazy val snapshotsSbtPlugin = projectMatrix
       scriptedLaunchOpts.value ++
         Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
     },
-    scriptedBufferLog := false)
+    scriptedBufferLog := false
+  )
   .settings(
     sbtPlugin := true,
     name      := "sbt-snapshots",

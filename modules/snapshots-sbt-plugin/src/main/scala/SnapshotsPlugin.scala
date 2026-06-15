@@ -81,137 +81,122 @@ object SnapshotsPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Setting[?]] =
     Compat.addRuntimeDep ++
-    Seq(
-
-      // libraryDependencies ++= {
-      //   if (snapshotsAddRuntimeDependency.value) {
-      //     val cross = crossVersion.value match {
-      //       case b: Binary => b.prefix + scalaBinaryVersion.value
-      //       case _         => scalaBinaryVersion.value
-      //     }
-
-      //     sLog.value.info(s"Cross: ${crossVersion.value}")
-
-      //     Seq(
-      //       "com.indoorvivants.snapshots" % s"snapshots-runtime_$cross" % BuildInfo.version % Test
-      //     )
-      //   } else Seq.empty
-      // },
-      snapshotsProjectIdentifier    := thisProject.value.id,
-      snapshotsAddRuntimeDependency := true,
-      snapshotsIntegrations         := Seq.empty,
-      snapshotsForceOverwrite       := false,
-      snapshotsLocation             := sourceDirectory.value / "snapshots",
-      snapshotsTemporaryDirectory := (
-        Test / managedResourceDirectories
-      ).value.head / "snapshots-tmp",
-      snapshotsCheck := Def
-        .task {
-          SnapshotsBuild.checkSnapshots(
-            snapshotsTemporaryDirectory.value,
-            snapshotsProjectIdentifier.value,
-            SnapshotAction.Interactive
-          )
-        }
-        .tag(snapshotsTag)
-        .value,
-      snapshotsAcceptAll := Def
-        .task {
-          SnapshotsBuild.checkSnapshots(
-            snapshotsTemporaryDirectory.value,
-            snapshotsProjectIdentifier.value,
-            SnapshotAction.Accept
-          )
-        }
-        .tag(snapshotsTag)
-        .value,
-      snapshotsDiscardAll := Def
-        .task {
-          SnapshotsBuild.checkSnapshots(
-            snapshotsTemporaryDirectory.value,
-            snapshotsProjectIdentifier.value,
-            SnapshotAction.Discard
-          )
-        }
-        .tag(snapshotsTag)
-        .value,
-      Test / sourceGenerators += Def.task {
-        val dest = (Test / managedSourceDirectories).value.head
-
-        val sources = SnapshotsBuild.generateSources(
-          projectId = snapshotsProjectIdentifier.value,
-          packageName = snapshotsPackageName.value,
-          snapshotsDestination =
-            snapshotsLocation.value / snapshotsProjectIdentifier.value,
-          sourceDestination = dest / "Snapshots.scala",
-          tmpLocation = snapshotsTemporaryDirectory.value,
-          forceOverwrite = snapshotsForceOverwrite.value
-        )
-
-        val integrations = snapshotsIntegrations.value.flatMap { integ =>
-          SnapshotsBuild.generateIntegrationSources(
-            dest / s"${integ}Integration.scala",
-            integ,
-            snapshotsPackageName.value
-          )
-        }
-
-        sources ++ integrations
-      },
-      snapshotsMigrate := Def
-        .inputTask {
-          import complete.DefaultParsers._
-
-          val migrations        = Seq("0.0.6").map(_.trim.toLowerCase())
-          val args: Seq[String] = spaceDelimited("<arg>").parsed
-          val migration = args.headOption
-            .map(_.trim.toLowerCase())
-            .filter(migrations.contains(_))
-            .getOrElse(
-              sys.error(
-                s"Expected 1 argument to the task, which is migration name, one of: [${migrations.mkString(", ")}]"
-              )
+      Seq(
+        snapshotsProjectIdentifier    := thisProject.value.id,
+        snapshotsAddRuntimeDependency := true,
+        snapshotsIntegrations         := Seq.empty,
+        snapshotsForceOverwrite       := false,
+        snapshotsLocation             := sourceDirectory.value / "snapshots",
+        snapshotsTemporaryDirectory := (
+          Test / managedResourceDirectories
+        ).value.head / "snapshots-tmp",
+        snapshotsCheck := Def
+          .task {
+            SnapshotsBuild.checkSnapshots(
+              snapshotsTemporaryDirectory.value,
+              snapshotsProjectIdentifier.value,
+              SnapshotAction.Interactive
             )
+          }
+          .tag(snapshotsTag)
+          .value,
+        snapshotsAcceptAll := Def
+          .task {
+            SnapshotsBuild.checkSnapshots(
+              snapshotsTemporaryDirectory.value,
+              snapshotsProjectIdentifier.value,
+              SnapshotAction.Accept
+            )
+          }
+          .tag(snapshotsTag)
+          .value,
+        snapshotsDiscardAll := Def
+          .task {
+            SnapshotsBuild.checkSnapshots(
+              snapshotsTemporaryDirectory.value,
+              snapshotsProjectIdentifier.value,
+              SnapshotAction.Discard
+            )
+          }
+          .tag(snapshotsTag)
+          .value,
+        Test / sourceGenerators += Def.task {
+          val dest = (Test / managedSourceDirectories).value.head
 
-          val log = sLog.value
+          val sources = SnapshotsBuild.generateSources(
+            projectId = snapshotsProjectIdentifier.value,
+            packageName = snapshotsPackageName.value,
+            snapshotsDestination =
+              snapshotsLocation.value / snapshotsProjectIdentifier.value,
+            sourceDestination = dest / "Snapshots.scala",
+            tmpLocation = snapshotsTemporaryDirectory.value,
+            forceOverwrite = snapshotsForceOverwrite.value
+          )
 
-          migration match {
-            case "0.0.6" =>
-              val oldLocation =
-                (Test / resourceDirectory).value / "snapshots" / snapshotsProjectIdentifier.value
-              val newLocation =
-                snapshotsLocation.value / snapshotsProjectIdentifier.value
-
-              if (oldLocation.exists() && oldLocation.isDirectory()) {
-                val snapshots = IO.listFiles(oldLocation)
-                log.info(
-                  s"Found ${snapshots.size} snapshots in old location [$oldLocation]. Will migrate them to new location - [$newLocation]"
-                )
-
-                IO.createDirectory(newLocation)
-
-                snapshots.foreach { file =>
-                  IO.move(file, newLocation / file.name)
-                }
-
-                log.info(s"Migrated ${snapshots.size} files")
-
-                val remaining = IO.listFiles(oldLocation).size
-
-                if (remaining == 0) {
-                  log.info(s"[$oldLocation] is now empty and can be removed")
-                }
-
-              } else {
-                sLog.value.warn(
-                  s"Tried to find old snapshots in [$oldLocation] but it doesn't seem to exist or is not a directory. Doing nothing"
-                )
-              }
-
+          val integrations = snapshotsIntegrations.value.flatMap { integ =>
+            SnapshotsBuild.generateIntegrationSources(
+              dest / s"${integ}Integration.scala",
+              integ,
+              snapshotsPackageName.value
+            )
           }
 
-        }
-        .tag(snapshotsTag)
-        .evaluated
-    )
+          sources ++ integrations
+        },
+        snapshotsMigrate := Def
+          .inputTask {
+            import complete.DefaultParsers._
+
+            val migrations        = Seq("0.0.6").map(_.trim.toLowerCase())
+            val args: Seq[String] = spaceDelimited("<arg>").parsed
+            val migration = args.headOption
+              .map(_.trim.toLowerCase())
+              .filter(migrations.contains(_))
+              .getOrElse(
+                sys.error(
+                  s"Expected 1 argument to the task, which is migration name, one of: [${migrations.mkString(", ")}]"
+                )
+              )
+
+            val log = sLog.value
+
+            migration match {
+              case "0.0.6" =>
+                val oldLocation =
+                  (Test / resourceDirectory).value / "snapshots" / snapshotsProjectIdentifier.value
+                val newLocation =
+                  snapshotsLocation.value / snapshotsProjectIdentifier.value
+
+                if (oldLocation.exists() && oldLocation.isDirectory()) {
+                  val snapshots = IO.listFiles(oldLocation)
+                  log.info(
+                    s"Found ${snapshots.size} snapshots in old location [$oldLocation]. Will migrate them to new location - [$newLocation]"
+                  )
+
+                  IO.createDirectory(newLocation)
+
+                  snapshots.foreach { file =>
+                    IO.move(file, newLocation / file.name)
+                  }
+
+                  log.info(s"Migrated ${snapshots.size} files")
+
+                  val remaining = IO.listFiles(oldLocation).size
+
+                  if (remaining == 0) {
+                    log.info(s"[$oldLocation] is now empty and can be removed")
+                  }
+
+                } else {
+                  sLog.value.warn(
+                    s"Tried to find old snapshots in [$oldLocation] but it doesn't seem to exist or is not a directory. Doing nothing"
+                  )
+                }
+
+            }
+
+          }
+          .tag(snapshotsTag)
+          .evaluated
+      )
 }
