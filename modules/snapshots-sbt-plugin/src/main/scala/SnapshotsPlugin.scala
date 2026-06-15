@@ -80,19 +80,23 @@ object SnapshotsPlugin extends AutoPlugin {
   )
 
   override def projectSettings: Seq[Setting[?]] =
+    Compat.addRuntimeDep ++
     Seq(
-      libraryDependencies ++= {
-        if (snapshotsAddRuntimeDependency.value) {
-          val cross = crossVersion.value match {
-            case b: Binary => b.prefix + scalaBinaryVersion.value
-            case _         => scalaBinaryVersion.value
-          }
 
-          Seq(
-            "com.indoorvivants.snapshots" % s"snapshots-runtime_$cross" % BuildInfo.version % Test
-          )
-        } else Seq.empty
-      },
+      // libraryDependencies ++= {
+      //   if (snapshotsAddRuntimeDependency.value) {
+      //     val cross = crossVersion.value match {
+      //       case b: Binary => b.prefix + scalaBinaryVersion.value
+      //       case _         => scalaBinaryVersion.value
+      //     }
+
+      //     sLog.value.info(s"Cross: ${crossVersion.value}")
+
+      //     Seq(
+      //       "com.indoorvivants.snapshots" % s"snapshots-runtime_$cross" % BuildInfo.version % Test
+      //     )
+      //   } else Seq.empty
+      // },
       snapshotsProjectIdentifier    := thisProject.value.id,
       snapshotsAddRuntimeDependency := true,
       snapshotsIntegrations         := Seq.empty,
