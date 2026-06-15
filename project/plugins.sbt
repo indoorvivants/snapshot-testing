@@ -24,6 +24,10 @@ Compile / unmanagedSourceDirectories +=
 
 Compile / unmanagedSourceDirectories +=
   (ThisBuild / baseDirectory).value.getParentFile /
+    "modules" / "snapshots-sbt-plugin" / "src" / "main" / "scala-2"
+
+Compile / unmanagedSourceDirectories +=
+  (ThisBuild / baseDirectory).value.getParentFile /
     "modules" / "snapshots-buildtime" / "src" / "main" / "scala"
 
 Compile / unmanagedResourceDirectories +=

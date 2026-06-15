@@ -1,0 +1,11 @@
+$ exists src/snapshots/root3/my_snapshot
+$ exists src/snapshots/rootNative3/my_snapshot
+#$ exists src/snapshots/rootJS3/my_snapshot
+> projects
+> show rootNative/Test/fullClasspath
+> root/test
+> rootNative/test
+#> rootJS/test
+> root/check
+> rootNative/check
+#> rootJS/check

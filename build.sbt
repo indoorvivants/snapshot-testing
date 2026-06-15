@@ -32,11 +32,16 @@ val Versions = new {
   val Scala213      = "2.13.17"
   val Scala212      = "2.12.21"
   val Scala3        = "3.3.7"
-  val Scala3Next    = "3.8.3"
+  val Scala3Next    = "3.8.4"
   val scalaVersions = Seq(Scala3, Scala212, Scala213)
   val scala3Next    = Seq(Scala3Next)
   val munit         = "1.3.0"
   val upickle       = "4.4.3"
+
+  val Sbt1      = "1.12.12"
+  val Sbt2      = "2.0.0"
+  val Sbt1Scala = Scala212
+  val Sbt2Scala = "3.8.4"
 }
 
 lazy val root: Project = project
@@ -123,16 +128,37 @@ lazy val snapshotsBuildtime = projectMatrix
 
 lazy val snapshotsSbtPlugin = projectMatrix
   .dependsOn(snapshotsBuildtime)
-  .jvmPlatform(Seq(Versions.Scala212))
+  .enablePlugins(ScriptedPlugin, SbtPlugin)
+  .jvmPlatform(Seq(Versions.Sbt1Scala, Versions.Sbt2Scala))
   .in(file("modules/snapshots-sbt-plugin"))
   .settings(
-    sbtPlugin := true,
-    name      := "sbt-snapshots",
+    (pluginCrossBuild / sbtVersion) := {
+      scalaBinaryVersion.value match {
+        case "2.12" => Versions.Sbt1
+        case _      => Versions.Sbt2
+      }
+    },
+    scalacOptions ++= {
+      scalaBinaryVersion.value match {
+        case "2.12" => "-Xsource:3" :: Nil
+        case _      => Nil
+      }
+    },
+    sbtTestDirectory := {
+      scalaBinaryVersion.value match {
+        case "2.12" => (sourceDirectory).value / "sbt-test"
+        case _      => (sourceDirectory).value / "sbt-test-sbt2"
+      }
+    },
     scriptedLaunchOpts := {
       scriptedLaunchOpts.value ++
         Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
     },
-    scriptedBufferLog := false,
+    scriptedBufferLog := false
+  )
+  .settings(
+    sbtPlugin := true,
+    name      := "sbt-snapshots",
     publishLocal := publishLocal
       .dependsOn(
         snapshotsBuildtime.jvm(Versions.Scala212) / publishLocal,

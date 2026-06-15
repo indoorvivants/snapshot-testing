@@ -1,0 +1,43 @@
+# Preconditions: snapshots don't exist in either project
+-$ exists force-overwrite/src/snapshots/root/my_snapshot
+-$ exists force-overwrite/src/snapshots/rootNative/my_snapshot
+-$ exists force-overwrite/src/snapshots/rootJS/my_snapshot
+-$ exists no-overwrite/src/snapshots/root/my_snapshot
+-$ exists no-overwrite/src/snapshots/rootNative/my_snapshot
+-$ exists no-overwrite/src/snapshots/rootJS/my_snapshot
+
+# Project with snapshotsForceOverwrite := true will handle missing snapshot file 
+# and just write the contents to it
+
+> overwrite/test
+> overwriteNative/test
+# > overwriteJS/test
+> overwrite/check
+> overwriteNative/check
+# > overwriteJS/check
+
+# Project with snapshotsForceOverwrite := false will fail the tests 
+# and record a snapshot diff
+
+-> noOverwrite/test
+-> noOverwriteNative/test
+# -> noOverwriteJS/test
+
+# Assuming that the diff exists, accept it and re run the tests
+
+> noOverwrite/snapshotsAcceptAll
+> noOverwriteNative/snapshotsAcceptAll
+# > noOverwriteJS/snapshotsAcceptAll
+> noOverwrite/test
+> noOverwriteNative/test
+# > noOverwriteJS/test
+
+# Finally, check that all snapshots exist
+
+$ exists force-overwrite/src/snapshots/overwrite/my_snapshot
+$ exists force-overwrite/src/snapshots/overwriteNative/my_snapshot
+# $ exists force-overwrite/src/snapshots/overwriteJS/my_snapshot
+$ exists no-overwrite/src/snapshots/noOverwrite/my_snapshot
+$ exists no-overwrite/src/snapshots/noOverwriteNative/my_snapshot
+# $ exists no-overwrite/src/snapshots/noOverwriteJS/my_snapshot
+
